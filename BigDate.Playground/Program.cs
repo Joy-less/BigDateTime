@@ -22,3 +22,11 @@ Console.WriteLine(new BigDateTime(2024, 08, 11, 01, 34, 00).Subtract(DateTime.Mi
 
 Console.WriteLine(DateTimeOffset.Now);
 Console.WriteLine(BigDateTimeOffset.CurrentLocalTime());
+
+Console.WriteLine();
+Console.CursorVisible = false;
+while (true) {
+    Console.SetCursorPosition(0, Console.CursorTop);
+    Console.Write(BigDateTime.CurrentLocalTime().ToLongString().PadRight(50));
+    Thread.Sleep(TimeSpan.FromSeconds(0.05));
+}
