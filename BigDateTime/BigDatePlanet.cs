@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace BigDate;
+namespace ExtendedNumerics;
 
 public class BigDatePlanet {
     public static readonly BigDatePlanet Default = new();

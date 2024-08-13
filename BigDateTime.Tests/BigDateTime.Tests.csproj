@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BigDate\BigDate.csproj" />
+    <ProjectReference Include="..\BigDateTime\BigDateTime.csproj" />
   </ItemGroup>
 
   <ItemGroup>

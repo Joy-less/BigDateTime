@@ -1,4 +1,4 @@
-namespace BigDate.Tests;
+namespace ExtendedNumerics.Tests;
 
 [TestClass]
 public class BigDateTests {

@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
-using ExtendedNumerics;
 
-namespace BigDate;
+namespace ExtendedNumerics;
 
 [Serializable]
 public readonly struct BigDateTimeOffset : IComparable, IComparable<BigDateTimeOffset> {

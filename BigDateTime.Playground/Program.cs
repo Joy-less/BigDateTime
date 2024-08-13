@@ -1,4 +1,4 @@
-﻿using BigDate;
+﻿using ExtendedNumerics;
 
 Console.WriteLine(new BigDateTime(60_000, 12, 30));
 Console.WriteLine(new BigDateTime(60_000, 12, 30).ToShortString());

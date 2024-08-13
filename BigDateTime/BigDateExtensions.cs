@@ -1,8 +1,8 @@
-﻿using ExtendedNumerics;
+﻿using System.Collections;
 
-namespace BigDate;
+namespace ExtendedNumerics;
 
-internal static class BigDateExtensions {
+internal static class BigDateTimeExtensions {
     /// <summary>
     /// Takes a format string (e.g. "yyyy"), finds a character (e.g. 'y') and replaces it with a value (e.g. 2024).
     /// </summary>
@@ -35,32 +35,28 @@ internal static class BigDateExtensions {
         }
         return Format;
     }
+    /// <summary>
+    /// Takes a date string (e.g. "2024/08/12 20:24:03") and separates it into up to <see cref="Count"/> components.
+    /// </summary>
     public static List<BigDecimal> ParseDateComponents(this string Date, int Count, int[]? IntegerComponents = null, char[]? Separators = null) {
         IntegerComponents ??= [0, 1, 2];
         Separators ??= ['-', '/', ':'];
 
         // Split date into components
-        string[] Components = Date.Split(Separators);
+        List<BigDecimal> Components = new(Count);
+        Components.AddRange(Date.Split(Separators).Select(BigDecimal.Parse));
 
-        // Yield date components
-        List<BigDecimal> DecimalComponents = new(Count);
-        for (int Index = 0; Index < Components.Length; Index++) {
-            // Parse component as decimal
-            BigDecimal DecimalComponent = BigDecimal.Parse(Components[Index]);
-            // Ensure component is integer if required
-            if (IntegerComponents.Contains(Index)) {
-                if (!DecimalComponent.GetFractionalPart().IsZero()) {
-                    throw new Exception($"Component {Index} must be an integer.");
-                }
+        // Ensure integer components are whole
+        foreach (int Index in IntegerComponents) {
+            if (Components[Index].DecimalPlaces != 0) {
+                throw new Exception($"Component {Index} must be an integer.");
             }
-            // Yield date component
-            DecimalComponents.Add(DecimalComponent);
         }
 
-        // Assume zero for missing components
-        for (int Index = DecimalComponents.Count; Index < Count; Index++) {
-            DecimalComponents.Add(BigDecimal.Zero);
+        // Assume missing components are zero
+        for (int Counter = Components.Count; Counter < Count; Counter++) {
+            Components.Add(0);
         }
-        return DecimalComponents;
+        return Components;
     }
 }

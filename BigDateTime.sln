@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigDate", "BigDate.csproj", "{02DB57BB-C6F1-4328-9094-C10BBF7C80CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigDateTime", "BigDateTime\BigDateTime.csproj", "{02DB57BB-C6F1-4328-9094-C10BBF7C80CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigDate.Tests", "..\BigDate.Tests\BigDate.Tests.csproj", "{3E6B7E98-74E2-44BC-AE79-A85EA3394066}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigDateTime.Tests", "BigDateTime.Tests\BigDateTime.Tests.csproj", "{3E6B7E98-74E2-44BC-AE79-A85EA3394066}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigDate.Playground", "..\BigDate.Playground\BigDate.Playground.csproj", "{D42806B8-57A8-4344-A432-33703B14B3D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigDateTime.Playground", "BigDateTime.Playground\BigDateTime.Playground.csproj", "{D42806B8-57A8-4344-A432-33703B14B3D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
