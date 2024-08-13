@@ -73,6 +73,9 @@ public readonly struct BigDateTimeOffset : IComparable, IComparable<BigDateTimeO
     public BigDateTimeOffset AddOffset(BigDecimal Seconds) {
         return new BigDateTimeOffset(BigDateTime, Offset + Seconds);
     }
+    public BigDateTimeOffset WithOffset(BigDecimal Seconds) {
+        return new BigDateTimeOffset(BigDateTime, Seconds);
+    }
     public BigDecimal TotalSeconds() {
         return BigDateTime.TotalSeconds() + Offset;
     }
