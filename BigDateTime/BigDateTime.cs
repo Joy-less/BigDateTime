@@ -2,7 +2,6 @@
 
 namespace ExtendedNumerics;
 
-[Serializable]
 public readonly struct BigDateTime : IComparable, IComparable<BigDateTime> {
     public readonly BigInteger Year;
     public readonly BigInteger Month;
@@ -10,16 +9,16 @@ public readonly struct BigDateTime : IComparable, IComparable<BigDateTime> {
     public readonly BigInteger Hour;
     public readonly BigInteger Minute;
     public readonly BigDecimal Second;
-    public readonly BigDatePlanet Planet;
+    public readonly Planet Planet;
 
-    public BigDateTime(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal Hour, BigDecimal Minute, BigDecimal Second, BigDatePlanet? Planet = null) {
+    public BigDateTime(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal Hour, BigDecimal Minute, BigDecimal Second, Planet? Planet = null) {
         this.Year = Year;
         this.Month = Month;
         this.Day = Day;
         this.Hour = Hour.GetWholePart();
         this.Minute = Minute.GetWholePart();
         this.Second = Second;
-        this.Planet = Planet ??= BigDatePlanet.Default;
+        this.Planet = Planet ??= Planet.Earth;
 
         // Add fractional hours to minutes
         this.Minute += (BigInteger)(Hour.GetFractionalPart() / Planet.MinutesInHour);
@@ -66,11 +65,11 @@ public readonly struct BigDateTime : IComparable, IComparable<BigDateTime> {
             this.Month = ((this.Month - 1) % Planet.MonthsInYear) + 1;
         }
     }
-    public BigDateTime(BigInteger Year, BigInteger Month, BigInteger Day, BigDatePlanet? Planet = null)
+    public BigDateTime(BigInteger Year, BigInteger Month, BigInteger Day, Planet? Planet = null)
         : this(Year, Month, Day, 0, 0, 0, Planet)
     {
     }
-    public BigDateTime(BigDecimal TotalSeconds, BigDatePlanet? Planet = null)
+    public BigDateTime(BigDecimal TotalSeconds, Planet? Planet = null)
         : this(0, 1, 1, 0, 0, TotalSeconds, Planet)
     {
     }
@@ -124,36 +123,52 @@ public readonly struct BigDateTime : IComparable, IComparable<BigDateTime> {
         return Planet.GetDaysInMonth((int)Month, Year);
     }
     public BigInteger DayOfYear() {
-        BigInteger DayInYear = Day;
+        // Add days passed in current month
+        BigInteger DayOfYear = Day;
+        // Add days passed in previous months
         for (int CurrentMonth = 1; CurrentMonth < Month; CurrentMonth++) {
-            DayInYear += Planet.GetDaysInMonth(CurrentMonth, Year);
+            DayOfYear += Planet.GetDaysInMonth(CurrentMonth, Year);
         }
-        return DayInYear;
+        return DayOfYear;
     }
-    public BigInteger DayOfWeek() {
-        return (BigInteger)TotalSeconds() / Planet.SecondsInDay % 7 + 1;
+    public string MonthOfYearName(bool Short = false) {
+        return Planet.MonthOfYearName((int)Month, Short);
     }
+    public int DayOfWeek() {
+        return (int)(TotalSeconds().WholeValue / Planet.SecondsInDay % Planet.DaysInWeek);
+    }
+    public string DayOfWeekName(bool Short = false) {
+        return Planet.DayOfWeekName(DayOfWeek(), Short);
+    }
+    public int DaytimeSegment() {
+        return (int)(Hour / Planet.HoursInDaytimeSegment).WholeValue;
+    }
+    public string DaytimeSegmentName() {
+        return Planet.DaytimeSegmentName(DaytimeSegment());
+    }
+    /// <summary>
+    /// Stringifies the BigDateTime using a format string.
+    /// </summary>
     public string ToString(string Format) {
-        return Format
-            .Format('y', Year)
-            .Format('M', Month)
-            .Format('d', Day)
-            .Format('h', Hour)
-            .Format('m', Minute)
-            .Format('s', Second.GetWholePart())
-            .Format('f', Second.GetFractionalPart());
+        return new BigDateTimeOffset(this).ToString(Format);
     }
+    /// <summary>
+    /// Stringifies the BigDateTime like "1970/01/01 00:00:00".
+    /// </summary>
     public override string ToString() {
-        // e.g. "1970/01/01 00:00:00"
-        return ToString("yyyy/MM/dd hh:mm:ss");
+        return ToString("yyyy/MM/dd HH:mm:ss");
     }
+    /// <summary>
+    /// Stringifies the BigDateTime like "Thursday 1 January 1970 00:00:00".
+    /// </summary>
     public string ToLongString() {
-        // e.g. "Thursday 1 January 1970 00:00:00"
-        return Planet.DayOfWeekName((int)DayOfWeek()) + ToString(" dd ") + Planet.MonthOfYearName((int)Month) + ToString(" yyyy hh:mm:ss");
+        return ToString("dddd d MMMM yyyy HH:mm:ss");
     }
+    /// <summary>
+    /// Stringifies the BigDateTime like "Thu 1 Jan 1970 00:00:00".
+    /// </summary>
     public string ToShortString() {
-        // e.g. "Thu 1 Jan 1970 00:00:00"
-        return Planet.DayOfWeekName((int)DayOfWeek(), 3) + ToString(" dd ") + Planet.MonthOfYearName((int)Month, 3) + ToString(" yyyy hh:mm:ss");
+        return ToString("ddd d MMM yyyy HH:mm:ss");
     }
     public int CompareTo(BigDateTime Other) {
         return TotalSeconds().CompareTo(Other.TotalSeconds());
@@ -162,19 +177,20 @@ public readonly struct BigDateTime : IComparable, IComparable<BigDateTime> {
         return Other is BigDateTime OtherBigDateTime ? CompareTo(OtherBigDateTime) : 1;
     }
 
-    public static BigDateTime Parse(string String, BigDatePlanet? Planet = null) {
-        List<BigDecimal> Components = String.ParseDateComponents(6);
+    public static BigDateTime Parse(string String, Planet? Planet = null) {
+        string[] Components = String.Split(['/', ':']);
+
         return new BigDateTime(
-            Components[0].WholeValue,
-            Components[1].WholeValue,
-            Components[2].WholeValue,
-            Components[3],
-            Components[4],
-            Components[5],
+            Components.ParseBigIntegerOrDefault(0),
+            Components.ParseBigIntegerOrDefault(1),
+            Components.ParseBigIntegerOrDefault(2),
+            Components.ParseBigDecimalOrDefault(3),
+            Components.ParseBigDecimalOrDefault(4),
+            Components.ParseBigDecimalOrDefault(5),
             Planet
         );
     }
-    public static bool TryParse(string String, out BigDateTime Result, BigDatePlanet? Planet = null) {
+    public static bool TryParse(string String, out BigDateTime Result, Planet? Planet = null) {
         try {
             Result = Parse(String, Planet);
             return true;

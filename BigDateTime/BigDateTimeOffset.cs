@@ -2,29 +2,31 @@
 
 namespace ExtendedNumerics;
 
-[Serializable]
 public readonly struct BigDateTimeOffset : IComparable, IComparable<BigDateTimeOffset> {
     public readonly BigDateTime BigDateTime;
+    /// <summary>
+    /// The offset in hours.
+    /// </summary>
     public readonly BigDecimal Offset;
 
     public BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal? Offset = null) {
         this.BigDateTime = BigDateTime;
         this.Offset = Offset ?? BigDecimal.Zero;
     }
-    public BigDateTimeOffset(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal Hour, BigDecimal Minute, BigDecimal Second, BigDecimal? Offset = null, BigDatePlanet? Planet = null)
+    public BigDateTimeOffset(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal Hour, BigDecimal Minute, BigDecimal Second, BigDecimal? Offset = null, Planet? Planet = null)
         : this(new BigDateTime(Year, Month, Day, Hour, Minute, Second, Planet), Offset)
     {
     }
-    public BigDateTimeOffset(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal? Offset = null, BigDatePlanet? Planet = null)
+    public BigDateTimeOffset(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal? Offset = null, Planet? Planet = null)
         : this(Year, Month, Day, 0, 0, 0, Offset, Planet)
     {
     }
-    public BigDateTimeOffset(BigDecimal TotalSeconds, BigDecimal? Offset = null, BigDatePlanet? Planet = null)
+    public BigDateTimeOffset(BigDecimal TotalSeconds, BigDecimal? Offset = null, Planet? Planet = null)
         : this(0, 1, 1, 0, 0, TotalSeconds, Offset, Planet)
     {
     }
     public BigDateTimeOffset(DateTimeOffset DateTimeOffset)
-        : this(DateTimeOffset.Year, DateTimeOffset.Month, DateTimeOffset.Day, DateTimeOffset.Hour, DateTimeOffset.Minute, DateTimeOffset.Second + (BigDecimal)DateTimeOffset.Millisecond / 1000, DateTimeOffset.Offset.TotalSeconds)
+        : this(DateTimeOffset.Year, DateTimeOffset.Month, DateTimeOffset.Day, DateTimeOffset.Hour, DateTimeOffset.Minute, DateTimeOffset.Second + (BigDecimal)DateTimeOffset.Millisecond / 1000, DateTimeOffset.Offset.TotalHours)
     {
     }
 
@@ -34,7 +36,7 @@ public readonly struct BigDateTimeOffset : IComparable, IComparable<BigDateTimeO
     public BigInteger Hour => BigDateTime.Hour;
     public BigInteger Minute => BigDateTime.Minute;
     public BigDecimal Second => BigDateTime.Second;
-    public BigDatePlanet Planet => BigDateTime.Planet;
+    public Planet Planet => BigDateTime.Planet;
 
     public BigDateTimeOffset AddYears(BigInteger Value) {
         return new BigDateTimeOffset(BigDateTime.AddYears(Value), Offset);
@@ -69,36 +71,73 @@ public readonly struct BigDateTimeOffset : IComparable, IComparable<BigDateTimeO
     public BigDecimal Subtract(BigDateTimeOffset Value) {
         return TotalSeconds() - Value.TotalSeconds();
     }
-    public BigDateTimeOffset AddOffset(BigDecimal Seconds) {
-        return new BigDateTimeOffset(BigDateTime, Offset + Seconds);
-    }
-    public BigDateTimeOffset WithOffset(BigDecimal Seconds) {
-        return new BigDateTimeOffset(BigDateTime, Seconds);
+    public BigDateTimeOffset WithOffset(BigDecimal Hours) {
+        return new BigDateTimeOffset(BigDateTime, Hours);
     }
     public BigDecimal TotalSeconds() {
-        return BigDateTime.TotalSeconds() + Offset;
+        return BigDateTime.AddHours(Offset).TotalSeconds();
     }
     public BigInteger DaysInMonth() {
-        return BigDateTime.AddSeconds(Offset).DaysInMonth();
+        return BigDateTime.AddHours(Offset).DaysInMonth();
     }
     public BigInteger DayOfYear() {
-        return BigDateTime.AddSeconds(Offset).DayOfYear();
+        return BigDateTime.AddHours(Offset).DayOfYear();
     }
-    public BigInteger DayOfWeek() {
-        return BigDateTime.AddSeconds(Offset).DayOfWeek();
+    public string MonthOfYearName(bool Short = false) {
+        return BigDateTime.AddHours(Offset).MonthOfYearName(Short);
+    }
+    public int DayOfWeek() {
+        return BigDateTime.AddHours(Offset).DayOfWeek();
+    }
+    public string DayOfWeekName(bool Short = false) {
+        return BigDateTime.AddHours(Offset).DayOfWeekName(Short);
+    }
+    public int DaytimeSegment() {
+        return BigDateTime.AddHours(Offset).DaytimeSegment();
+    }
+    public string DaytimeSegmentName() {
+        return BigDateTime.AddHours(Offset).DaytimeSegmentName();
     }
     public string ToString(string Format) {
-        return BigDateTime.ToString(Format)
-            .Format('z', (Offset >= 0 ? "+" : "-") + TimeSpan.FromSeconds((double)Offset).ToString("hh':'mm"));
+        for (int Index = 0; Index < Format.Length; Index++) {
+            Redo:
+            foreach ((string Find, Func<BigDateTimeOffset, object?> Replacement) in Planet.FormatTable) {
+                // Ensure find sequence would fit inside rest of string
+                if (Index + Find.Length > Format.Length) {
+                    continue;
+                }
+                // Ensure find sequence follows current index
+                if (Format[Index..(Index + Find.Length)] != Find) {
+                    continue;
+                }
+                // Get replacement string
+                string ReplacementStr = Replacement(this)?.ToString() ?? "";
+                // Replace find sequence
+                Format = Format[..Index] + ReplacementStr + Format[(Index + Find.Length)..];
+                Index += ReplacementStr.Length;
+                // Replace again
+                goto Redo;
+            }
+        }
+        return Format;
     }
+    /// <summary>
+    /// Stringifies the BigDateTimeOffset like "1970/01/01 00:00:00 +01:00".
+    /// </summary>
     public override string ToString() {
-        return BigDateTime.ToString() + ToString(" z");
+        return ToString("yyyy/MM/dd HH:mm:ss zzz");
     }
+    /// <summary>
+    /// Stringifies the BigDateTimeOffset like "Thursday 1 January 1970 00:00:00 +01:00".
+    /// </summary>
     public string ToLongString() {
-        return BigDateTime.ToLongString() + ToString(" z");
+        return ToString("dddd d MMMM yyyy HH:mm:ss zzz");
     }
+    /// <summary>
+    /// Stringifies the BigDateTimeOffset like "Thu 1 Jan 1970 00:00:00 +01:00".
+    /// </summary>
     public string ToShortString() {
-        return BigDateTime.ToShortString() + ToString( "z");
+        return ToString("ddd d MMM yyyy HH:mm:ss zzz");
     }
     public int CompareTo(BigDateTimeOffset Other) {
         return TotalSeconds().CompareTo(Other.TotalSeconds());
@@ -107,21 +146,23 @@ public readonly struct BigDateTimeOffset : IComparable, IComparable<BigDateTimeO
         return Other is BigDateTimeOffset OtherBigDateTimeOffset ? CompareTo(OtherBigDateTimeOffset) : 1;
     }
 
-    public static BigDateTimeOffset Parse(string String, BigDatePlanet? Planet = null) {
-        Planet ??= BigDatePlanet.Default;
-        List<BigDecimal> Components = String.ParseDateComponents(9);
+    public static BigDateTimeOffset Parse(string String, Planet? Planet = null) {
+        string[] Components = String.Split(['/', ':']);
+
         return new BigDateTimeOffset(
-            Components[0].WholeValue,
-            Components[1].WholeValue,
-            Components[2].WholeValue,
-            Components[3],
-            Components[4],
-            Components[5],
-            Components[6] * Planet.SecondsInHour + Components[7] * Planet.SecondsInMinute + Components[8],
+            Components.ParseBigIntegerOrDefault(0),
+            Components.ParseBigIntegerOrDefault(1),
+            Components.ParseBigIntegerOrDefault(2),
+            Components.ParseBigDecimalOrDefault(3),
+            Components.ParseBigDecimalOrDefault(4),
+            Components.ParseBigDecimalOrDefault(5),
+            Components.ParseBigDecimalOrDefault(6) * (Planet ?? Planet.Earth).SecondsInHour
+                + Components.ParseBigDecimalOrDefault(7) * (Planet ?? Planet.Earth).SecondsInMinute
+                + Components.ParseBigDecimalOrDefault(8),
             Planet
         );
     }
-    public static bool TryParse(string String, out BigDateTimeOffset Result, BigDatePlanet? Planet = null) {
+    public static bool TryParse(string String, out BigDateTimeOffset Result, Planet? Planet = null) {
         try {
             Result = Parse(String, Planet);
             return true;
@@ -144,9 +185,9 @@ public readonly struct BigDateTimeOffset : IComparable, IComparable<BigDateTimeO
         return This.Subtract(Other);
     }
     public static explicit operator DateTimeOffset(BigDateTimeOffset BigDateTimeOffset) {
-        return new DateTimeOffset((DateTime)BigDateTimeOffset.BigDateTime, TimeSpan.FromSeconds((double)BigDateTimeOffset.Offset));
+        return new DateTimeOffset((DateTime)BigDateTimeOffset.BigDateTime, TimeSpan.FromHours((double)BigDateTimeOffset.Offset));
     }
     public static implicit operator BigDateTimeOffset(DateTimeOffset DateTimeOffset) {
-        return new BigDateTimeOffset(DateTimeOffset.DateTime, DateTimeOffset.Offset.TotalSeconds);
+        return new BigDateTimeOffset(DateTimeOffset);
     }
 }
