@@ -2,33 +2,21 @@
 
 namespace ExtendedNumerics;
 
-public readonly struct BigDateTimeOffset : IComparable, IComparable<BigDateTimeOffset> {
-    public readonly BigDateTime BigDateTime;
+public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal? Offset = null) : IComparable, IComparable<BigDateTimeOffset> {
+    public readonly BigDateTime BigDateTime = BigDateTime;
     /// <summary>
     /// The offset in hours.
     /// </summary>
-    public readonly BigDecimal Offset;
+    public readonly BigDecimal Offset = Offset ?? BigDecimal.Zero;
 
-    public BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal? Offset = null) {
-        this.BigDateTime = BigDateTime;
-        this.Offset = Offset ?? BigDecimal.Zero;
-    }
     public BigDateTimeOffset(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal Hour, BigDecimal Minute, BigDecimal Second, BigDecimal? Offset = null, Planet? Planet = null)
-        : this(new BigDateTime(Year, Month, Day, Hour, Minute, Second, Planet), Offset)
-    {
-    }
+        : this(new BigDateTime(Year, Month, Day, Hour, Minute, Second, Planet), Offset) { }
     public BigDateTimeOffset(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal? Offset = null, Planet? Planet = null)
-        : this(Year, Month, Day, 0, 0, 0, Offset, Planet)
-    {
-    }
+        : this(new BigDateTime(Year, Month, Day, Planet), Offset) { }
     public BigDateTimeOffset(BigDecimal TotalSeconds, BigDecimal? Offset = null, Planet? Planet = null)
-        : this(0, 1, 1, 0, 0, TotalSeconds, Offset, Planet)
-    {
-    }
+        : this(new BigDateTime(TotalSeconds, Planet), Offset) { }
     public BigDateTimeOffset(DateTimeOffset DateTimeOffset)
-        : this(DateTimeOffset.Year, DateTimeOffset.Month, DateTimeOffset.Day, DateTimeOffset.Hour, DateTimeOffset.Minute, DateTimeOffset.Second + (BigDecimal)DateTimeOffset.Millisecond / 1000, DateTimeOffset.Offset.TotalHours)
-    {
-    }
+        : this(new BigDateTime(DateTimeOffset.DateTime), DateTimeOffset.Offset.TotalHours) { }
 
     public BigInteger Year => BigDateTime.Year;
     public BigInteger Month => BigDateTime.Month;
@@ -75,7 +63,7 @@ public readonly struct BigDateTimeOffset : IComparable, IComparable<BigDateTimeO
         return new BigDateTimeOffset(BigDateTime, Hours);
     }
     public BigDecimal TotalSeconds() {
-        return BigDateTime.AddHours(Offset).TotalSeconds();
+        return BigDateTime.AddHours(Offset).TotalSeconds;
     }
     public BigInteger DaysInMonth() {
         return BigDateTime.AddHours(Offset).DaysInMonth();

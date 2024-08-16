@@ -5,25 +5,24 @@ namespace ExtendedNumerics;
 public class Planet {
     public static readonly Planet Earth = new();
 
-    public long SecondsInMinute { get; set; } = 60;
-    public long MinutesInHour { get; set; } = 60;
-    public long HoursInDay { get; set; } = 24;
+    public BigDecimal SecondsInMinute { get; set; } = 60;
+    public BigDecimal MinutesInHour { get; set; } = 60;
+    public BigDecimal HoursInDay { get; set; } = 24;
     public string[] DaytimeSegments { get; set; } = ["A.M.", "P.M."];
 
-    public long DaysInYear { get; set; } = 365;
-    public long ExtraDaysInLeapYear { get; set; } = 1;
+    public BigDecimal DaysInCommonYear { get; set; } = 365;
+    public BigDecimal DaysInLeapYear { get; set; } = 366;
 
-    public int DaysInWeek { get; set; } = 7;
+    public BigInteger DaysInWeek { get; set; } = 7;
     public string[] DaysOfWeek { get; set; } = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     public string[] ShortDaysOfWeek { get; set; } = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-    public int MonthsInYear { get; set; } = 12;
-    public BigInteger[] DaysInMonths { get; set; } = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    public BigInteger MonthsInYear { get; set; } = 12;
+    public Func<BigInteger, BigInteger, BigInteger> DaysInMonth { get; set; } = DaysInMonthOnEarth;
     public string[] MonthsOfYear { get; set; } = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     public string[] ShortMonthsOfYear { get; set; } = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    public Func<BigInteger, BigInteger> CountLeapYears { get; set; } = CountLeapYearsOnEarth;
-    public Func<BigInteger, BigInteger, BigInteger> GetLeapDaysInMonth { get; set; } = GetLeapDaysInMonthOnEarth;
+    public (BigInteger Years, bool Include)[] LeapYearDivisors = [(4, true), (100, false), (400, true)];
 
     public Dictionary<string, Func<BigDateTimeOffset, object?>> FormatTable { get; set; } = new() {
         {"dddd", BDTO => BDTO.DayOfWeekName()},
@@ -46,8 +45,8 @@ public class Planet {
         {"FFF", BDTO => BDTO.Second.GetFractionalPart().ToString().PadLeft(3, '0')[..2].NullIfZero()},
         {"FF", BDTO => BDTO.Second.GetFractionalPart().ToString().PadLeft(2, '0')[..1].NullIfZero()},
         {"F", BDTO => BDTO.Second.GetFractionalPart().ToString()[..0].NullIfZero()},
-        {"hh", BDTO => (BDTO.Hour % BDTO.Planet.HoursInDaytimeSegment).ToString().PadLeft(2, '0')},
-        {"h", BDTO => BDTO.Hour % BDTO.Planet.HoursInDaytimeSegment},
+        {"hh", BDTO => (BDTO.Hour % (BDTO.Planet.HoursInDaytimeSegment + 1)).ToString().PadLeft(2, '0')},
+        {"h", BDTO => BDTO.Hour % (BDTO.Planet.HoursInDaytimeSegment + 1)},
         {"HH", BDTO => BDTO.Hour.ToString("D2")},
         {"H", BDTO => BDTO.Hour},
         {"mm", BDTO => BDTO.Minute.ToString("D2")},
@@ -71,15 +70,12 @@ public class Planet {
         {"z", BDTO => (BDTO.Offset.IsNegative() ? "-" : "+") + BigDecimal.Abs(BDTO.Offset).WholeValue},
     };
 
-    public long SecondsInHour => SecondsInMinute * MinutesInHour;
-    public long SecondsInDay => SecondsInMinute * MinutesInHour * HoursInDay;
-    public long SecondsInYear => SecondsInMinute * MinutesInHour * HoursInDay * DaysInYear;
-    public long SecondsInLeapYear => SecondsInMinute * MinutesInHour * HoursInDay * (DaysInYear + ExtraDaysInLeapYear);
-    public BigDecimal HoursInDaytimeSegment => (BigDecimal)HoursInDay / DaytimeSegments.Length;
+    public BigDecimal SecondsInHour => SecondsInMinute * MinutesInHour;
+    public BigDecimal SecondsInDay => SecondsInMinute * MinutesInHour * HoursInDay;
+    public BigDecimal SecondsInCommonYear => SecondsInMinute * MinutesInHour * HoursInDay * DaysInCommonYear;
+    public BigDecimal SecondsInLeapYear => SecondsInMinute * MinutesInHour * HoursInDay * DaysInLeapYear;
+    public BigDecimal HoursInDaytimeSegment => HoursInDay / DaytimeSegments.Length;
 
-    public BigInteger GetDaysInMonth(int Month, BigInteger Year) {
-        return DaysInMonths[Month - 1] + GetLeapDaysInMonth(Month, Year);
-    }
     public string MonthOfYearName(int MonthOfYear, bool Short = false) {
         return Short ? ShortMonthsOfYear[MonthOfYear - 1] : MonthsOfYear[MonthOfYear - 1];
     }
@@ -89,23 +85,58 @@ public class Planet {
     public string DaytimeSegmentName(int DaytimeSegment) {
         return DaytimeSegments[DaytimeSegment];
     }
-    public BigInteger CountLeapYearsBetween(BigInteger FirstYear, BigInteger LastYear) {
-        return CountLeapYears(LastYear) - CountLeapYears(FirstYear - 1);
+    public bool IsLeapYear(BigInteger Year) {
+        foreach ((BigInteger Divisor, bool Include) in LeapYearDivisors.Reverse()) {
+            if (Year % Divisor == 0) {
+                return Include;
+            }
+        }
+        return false;
     }
-    public BigInteger CountNonLeapYearsBetween(BigInteger FirstYear, BigInteger EndYear) {
-        return EndYear - FirstYear - CountLeapYearsBetween(FirstYear, EndYear);
+    public BigInteger LeapYearsBefore(BigInteger Year) {
+        BigInteger Counter = 0;
+        foreach ((BigInteger Divisor, bool Include) in LeapYearDivisors) {
+            if (Include) {
+                Counter += Year / Divisor;
+            }
+            else {
+                Counter -= Year / Divisor;
+            }
+        }
+        return Counter;
+    }
+    public BigInteger CommonYearsBefore(BigInteger Year) {
+        return Year - LeapYearsBefore(Year);
+    }
+    public BigDecimal SecondsBeforeYear(BigInteger Year) {
+        return (LeapYearsBefore(Year) * SecondsInLeapYear) + (CommonYearsBefore(Year) * SecondsInCommonYear);
+    }
+    public BigDecimal SecondsInYear(BigInteger Year) {
+        return IsLeapYear(Year) ? SecondsInLeapYear : SecondsInCommonYear;
+    }
+    public BigInteger DayOfYear(BigInteger Year, BigInteger Month, BigInteger Day) {
+        // Add days passed in current month
+        BigInteger DayOfYear = Day;
+        // Add days passed in previous months
+        for (int CurrentMonth = 1; CurrentMonth < Month; CurrentMonth++) {
+            DayOfYear += DaysInMonth(CurrentMonth, Year);
+        }
+        return DayOfYear;
     }
 
+    public static BigInteger DaysInMonthOnEarth(BigInteger Month, BigInteger Year) {
+        if (Month == 1 || Month == 3 || Month == 5 || Month == 7 || Month == 8 || Month == 10 || Month == 12) {
+            return 31;
+        }
+        if (Month == 2) {
+            if (IsLeapYearOnEarth(Year)) {
+                return 29;
+            }
+            return 28;
+        }
+        return 30;
+    }
     public static bool IsLeapYearOnEarth(BigInteger Year) {
         return (Year % 400 == 0) || (Year % 4 == 0 && Year % 100 == 0);
-    }
-    public static BigInteger CountLeapYearsOnEarth(BigInteger Year) {
-        return (Year / 4) - (Year / 100) + (Year / 400);
-    }
-    public static BigInteger GetLeapDaysInMonthOnEarth(BigInteger Month, BigInteger Year) {
-        if (Month == 2 && IsLeapYearOnEarth(Year)) {
-            return 1;
-        }
-        return 0;
     }
 }
