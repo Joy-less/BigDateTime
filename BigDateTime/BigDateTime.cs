@@ -1,35 +1,38 @@
 ﻿using System.Numerics;
+using ExtendedNumerics;
 
-namespace ExtendedNumerics;
+namespace BigTime;
 
-public readonly struct BigDateTime(BigDecimal TotalSeconds, Planet? Planet = null) : IComparable, IComparable<BigDateTime> {
+using static EarthConstants;
+using static BigDateTimeExtensions;
+
+public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComparable<BigDateTime> {
     public readonly BigDecimal TotalSeconds = TotalSeconds;
-    public readonly Planet Planet = Planet ?? Planet.Earth;
 
-    public BigDateTime(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal Hour, BigDecimal Minute, BigDecimal Second, Planet? Planet = null)
-        : this(CalculateTotalSeconds(Year, Month, Day, Hour, Minute, Second, Planet), Planet) { }
-    public BigDateTime(BigInteger Year, BigInteger Month, BigInteger Day, Planet? Planet = null)
-        : this(Year, Month, Day, 0, 0, 0, Planet) { }
+    public BigDateTime(BigInteger Year, int Month, int Day, int Hour, int Minute, BigDecimal Second)
+        : this(TotalSecondsAt(Year, Month, Day, Hour, Minute, Second)) { }
+    public BigDateTime(BigInteger Year, int Month, int Day)
+        : this(Year, Month, Day, 0, 0, 0) { }
     public BigDateTime(DateTime DateTime)
-        : this(DateTime.Subtract(DateTime.MinValue).TotalSeconds + Planet.Earth.SecondsInCommonYear) { }
+        : this(DateTime.Subtract(DateTime.MinValue).TotalSeconds + SecondsInCommonYear) { } // Add seconds in the year 0, because DateTime starts at year 1 not year 0
 
     public BigDateTime AddYears(BigInteger Value) {
         return new BigDateTime(Year + Value, Month, Day, Hour, Minute, Second);
     }
-    public BigDateTime AddMonths(BigInteger Value) {
+    public BigDateTime AddMonths(int Value) {
         return new BigDateTime(Year, Month + Value, Day, Hour, Minute, Second);
     }
-    public BigDateTime AddDays(BigInteger Value) {
-        return new BigDateTime(Year, Month, Day + Value, Hour, Minute, Second);
+    public BigDateTime AddDays(BigDecimal Value) {
+        return new BigDateTime(TotalSeconds + (Value * SecondsInDay));
     }
     public BigDateTime AddHours(BigDecimal Value) {
-        return new BigDateTime(Year, Month, Day, Hour + Value, Minute, Second);
+        return new BigDateTime(TotalSeconds + (Value * SecondsInHour));
     }
     public BigDateTime AddMinutes(BigDecimal Value) {
-        return new BigDateTime(Year, Month, Day, Hour, Minute + Value, Second);
+        return new BigDateTime(TotalSeconds + (Value * SecondsInMinute));
     }
     public BigDateTime AddSeconds(BigDecimal Value) {
-        return new BigDateTime(Year, Month, Day, Hour, Minute, Second + Value);
+        return new BigDateTime(TotalSeconds + Value);
     }
     public BigDateTime AddMilliseconds(BigDecimal Value) {
         return AddSeconds(Value / 1000);
@@ -46,26 +49,20 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds, Planet? Planet = nul
     public BigDecimal Subtract(BigDateTime Value) {
         return TotalSeconds - Value.TotalSeconds;
     }
-    public BigInteger DaysInMonth() {
-        return Planet.DaysInMonth((int)Month, Year);
-    }
-    public BigInteger DayOfYear() {
-        return Planet.DayOfYear(Year, Month, Day);
+    public int DaysInCurrentMonth() {
+        return DaysInMonth(Month, Year);
     }
     public string MonthOfYearName(bool Short = false) {
-        return Planet.MonthOfYearName((int)Month, Short);
-    }
-    public int DayOfWeek() {
-        return (int)(TotalSeconds / Planet.SecondsInDay % Planet.DaysInWeek).WholeValue;
+        return Short ? ShortMonthsOfYear[Month - 1] : MonthsOfYear[Month - 1];
     }
     public string DayOfWeekName(bool Short = false) {
-        return Planet.DayOfWeekName(DayOfWeek(), Short);
+        return Short ? ShortDaysOfWeek[(int)DayOfWeek] : DaysOfWeek[(int)DayOfWeek];
     }
     public int DaytimeSegment() {
-        return (int)(Hour / Planet.HoursInDaytimeSegment).WholeValue;
+        return Hour / HoursInDaytimeSegment;
     }
     public string DaytimeSegmentName() {
-        return Planet.DaytimeSegmentName(DaytimeSegment());
+        return DaytimeSegments[DaytimeSegment()];
     }
     /// <summary>
     /// Stringifies the BigDateTime using a format string.
@@ -99,90 +96,45 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds, Planet? Planet = nul
     }
 
     public BigInteger Year {
-        get {
-            // Find year above current seconds
-            BigInteger Counter = 0;
-            while (true) {
-                BigDecimal SecondsBeforeNextYear = Planet.SecondsBeforeYear(Counter + 1);
-                if (TotalSeconds < SecondsBeforeNextYear) {
-                    break;
-                }
-                Counter++;
-            }
-            return Counter;
-        }
+        get => BlackMagic.GetYear(TotalSeconds.WholeValue);
     }
-    public BigInteger Month {
-        get {
-            BigInteger Year = this.Year;
-            BigDecimal RemainingSeconds = TotalSeconds;
-
-            // Subtract seconds up to start of year
-            RemainingSeconds -= Planet.SecondsBeforeYear(Year);
-
-            // Calculate current month within this year
-            BigInteger Counter = 1;
-            while (true) {
-                BigDecimal SecondsInMonth = Planet.DaysInMonth(Counter, Year) * Planet.SecondsInDay;
-                if (RemainingSeconds < SecondsInMonth) {
-                    break;
-                }
-                RemainingSeconds -= SecondsInMonth;
-                Counter++;
-            }
-            return Counter;
-        }
+    public int Month {
+        get => BlackMagic.GetMonthOfYear(TotalSeconds.WholeValue);
     }
-    public BigInteger Day {
-        get {
-            BigInteger Year = this.Year;
-            BigInteger Month = this.Month;
-
-            // Calculate total seconds before start of month
-            BigDecimal SecondsBeforeThisMonth = 0;
-            for (BigInteger Counter = 1; Counter < Month; Counter++) {
-                SecondsBeforeThisMonth += Planet.DaysInMonth(Counter, Year) * Planet.SecondsInDay;
-            }
-
-            // Calculate number of seconds in this month
-            BigDecimal SecondsInThisMonth = TotalSeconds - (Planet.SecondsBeforeYear(Year) + SecondsBeforeThisMonth);
-
-            // Calculate day from remaining seconds
-            return (SecondsInThisMonth / Planet.SecondsInDay).WholeValue + 1;
-        }
+    public int Day {
+        get => BlackMagic.GetDayOfMonth(TotalSeconds.WholeValue);
     }
-    public BigInteger Hour {
-        get {
-            return (TotalSeconds % Planet.SecondsInDay / Planet.SecondsInHour).WholeValue;
-        }
+    public int Hour {
+        get => (int)(TotalSeconds % SecondsInDay / SecondsInHour).WholeValue;
     }
-    public BigInteger Minute {
-        get {
-            return (TotalSeconds % Planet.SecondsInHour / Planet.SecondsInMinute).WholeValue;
-        }
+    public int Minute {
+        get => (int)(TotalSeconds % SecondsInHour / SecondsInMinute).WholeValue;
     }
     public BigDecimal Second {
-        get {
-            return TotalSeconds % Planet.SecondsInMinute;
-        }
+        get => TotalSeconds % SecondsInMinute;
+    }
+    public int DayOfYear {
+        get => BlackMagic.GetDayOfYear(TotalSeconds.WholeValue);
+    }
+    public DayOfWeek DayOfWeek {
+        get => (DayOfWeek)(int)(TotalSeconds / SecondsInDay % DaysInWeek).WholeValue;
     }
 
-    public static BigDateTime Parse(string String, Planet? Planet = null) {
-        string[] Components = String.Split(['/', ':']);
+    public static BigDateTime Parse(string String) {
+        Parser Parser = new(String);
 
-        return new BigDateTime(
-            Components.ParseBigIntegerOrDefault(0),
-            Components.ParseBigIntegerOrDefault(1),
-            Components.ParseBigIntegerOrDefault(2),
-            Components.ParseBigDecimalOrDefault(3),
-            Components.ParseBigDecimalOrDefault(4),
-            Components.ParseBigDecimalOrDefault(5),
-            Planet
-        );
+        Parser.EatBigInteger(out BigInteger Year);
+        Parser.EatInt(out int Month, 1);
+        Parser.EatInt(out int Day, 1);
+        Parser.EatInt(out int Hour);
+        Parser.EatInt(out int Minute);
+        Parser.EatBigDecimal(out BigDecimal Second);
+
+        return new BigDateTime(Year, Month, Day, Hour, Minute, Second);
     }
-    public static bool TryParse(string String, out BigDateTime Result, Planet? Planet = null) {
+    public static bool TryParse(string String, out BigDateTime Result) {
         try {
-            Result = Parse(String, Planet);
+            Result = Parse(String);
             return true;
         }
         catch (Exception) {
@@ -190,20 +142,11 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds, Planet? Planet = nul
             return false;
         }
     }
-    public static BigDateTime CurrentUniversalTime() {
-        return DateTime.UtcNow;
+    public static BigDateTime Now(BigDecimal Offset) {
+        return new BigDateTime(DateTime.UtcNow).AddHours(Offset);
     }
-    public static BigDateTime CurrentLocalTime() {
-        return DateTime.Now;
-    }
-    public static BigDecimal CalculateTotalSeconds(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal Hour, BigDecimal Minute, BigDecimal Second, Planet? Planet = null) {
-        Planet ??= Planet.Earth;
-        return Second
-            + Minute * Planet.SecondsInMinute
-            + Hour * Planet.SecondsInHour
-            + (Planet.DayOfYear(Year, Month, Day) - 1) * Planet.SecondsInDay
-            + Planet.LeapYearsBefore(Year) * Planet.SecondsInLeapYear
-            + (Year - Planet.LeapYearsBefore(Year)) * Planet.SecondsInCommonYear;
+    public static BigDateTime Now() {
+        return Now(DateTimeOffset.Now.Offset.TotalHours);
     }
     public static BigDateTime operator +(BigDateTime This, BigDateTime Other) {
         return This.Add(Other);
@@ -216,10 +159,5 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds, Planet? Planet = nul
     }
     public static implicit operator BigDateTime(DateTime DateTime) {
         return new BigDateTime(DateTime);
-    }
-
-    static BigDateTime() {
-        // Reduce BigDecimal precision to mitigate slow operations
-        BigDecimal.Precision = Math.Min(BigDecimal.Precision, 50);
     }
 }

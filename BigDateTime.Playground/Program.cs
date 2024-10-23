@@ -1,4 +1,9 @@
-﻿using ExtendedNumerics;
+﻿using BigTime;
+
+Console.WriteLine(BigDateTime.Parse("2012/2/29"));
+Console.WriteLine(new BigDateTime(2012, 2, 29));
+
+Console.WriteLine(new BigDateTime(2013, 2, 28));
 
 Console.WriteLine(BigDateTime.Parse("2023/2/2").DayOfWeekName() + " -> " + BigDateTime.Parse("2023/2/3").DayOfWeekName());
 Console.WriteLine(DateTime.Parse("2023/2/2").DayOfWeek + " -> " + DateTime.Parse("2023/2/3").DayOfWeek);
@@ -14,25 +19,26 @@ Console.WriteLine(new BigDateTime(60_000, 12, 30));
 Console.WriteLine(new BigDateTime(60_000, 12, 30).AddDays(1));
 Console.WriteLine(new BigDateTime(60_000, 12, 30).AddDays(2));
 
-Console.WriteLine(new BigDateTime(451934750934));
-Console.WriteLine(new BigDateTime(451934750934).AddDays(2));
+Console.WriteLine(new BigDateTimeOffset(451934750934));
+Console.WriteLine(new BigDateTimeOffset(451934750934).AddDays(2));
 
-Console.WriteLine(BigDateTime.CurrentUniversalTime().ToLongString());
-Console.WriteLine(BigDateTime.CurrentLocalTime().ToLongString());
+Console.WriteLine(BigDateTime.Now(0).ToLongString());
+Console.WriteLine(BigDateTime.Now().ToLongString());
 
 Console.WriteLine(new DateTime(2024, 08, 11, 01, 34, 00).Subtract(DateTime.MinValue).TotalSeconds);
 Console.WriteLine(new BigDateTime(2024, 08, 11, 01, 34, 00).Subtract(DateTime.MinValue));
 
 Console.WriteLine(DateTimeOffset.Now);
-Console.WriteLine(BigDateTimeOffset.CurrentLocalTime());
+Console.WriteLine(BigDateTimeOffset.Now());
 
 Console.WriteLine(DateTimeOffset.Now.DayOfWeek);
-Console.WriteLine(BigDateTimeOffset.CurrentLocalTime().DayOfWeek());
+Console.WriteLine(BigDateTime.Now().DayOfWeek);
 
 Console.WriteLine();
+Console.WriteLine("Realtime:");
 Console.CursorVisible = false;
 while (true) {
     Console.SetCursorPosition(0, Console.CursorTop);
-    Console.Write(BigDateTimeOffset.CurrentLocalTime().ToLongString().PadRight(50));
+    Console.Write(BigDateTime.Now().ToLongString().PadRight(50));
     Thread.Sleep(TimeSpan.FromSeconds(0.05));
 }

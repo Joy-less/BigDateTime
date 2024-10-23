@@ -1,38 +1,44 @@
 ﻿using System.Numerics;
+using ExtendedNumerics;
 
-namespace ExtendedNumerics;
+namespace BigTime;
 
-public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal? Offset = null) : IComparable, IComparable<BigDateTimeOffset> {
+using static EarthConstants;
+
+public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Offset = default) : IComparable, IComparable<BigDateTimeOffset> {
     public readonly BigDateTime BigDateTime = BigDateTime;
     /// <summary>
     /// The offset in hours.
     /// </summary>
-    public readonly BigDecimal Offset = Offset ?? BigDecimal.Zero;
+    public readonly BigDecimal Offset = Offset;
 
-    public BigDateTimeOffset(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal Hour, BigDecimal Minute, BigDecimal Second, BigDecimal? Offset = null, Planet? Planet = null)
-        : this(new BigDateTime(Year, Month, Day, Hour, Minute, Second, Planet), Offset) { }
-    public BigDateTimeOffset(BigInteger Year, BigInteger Month, BigInteger Day, BigDecimal? Offset = null, Planet? Planet = null)
-        : this(new BigDateTime(Year, Month, Day, Planet), Offset) { }
-    public BigDateTimeOffset(BigDecimal TotalSeconds, BigDecimal? Offset = null, Planet? Planet = null)
-        : this(new BigDateTime(TotalSeconds, Planet), Offset) { }
+    public readonly BigDecimal TotalSeconds = BigDateTime.AddHours(Offset).TotalSeconds;
+
+    public BigDateTimeOffset(BigInteger Year, int Month, int Day, int Hour, int Minute, BigDecimal Second, BigDecimal Offset = default)
+        : this(new BigDateTime(Year, Month, Day, Hour, Minute, Second), Offset) { }
+    public BigDateTimeOffset(BigInteger Year, int Month, int Day, BigDecimal Offset = default)
+        : this(new BigDateTime(Year, Month, Day), Offset) { }
+    public BigDateTimeOffset(BigDecimal TotalSeconds, BigDecimal Offset = default)
+        : this(new BigDateTime(TotalSeconds), Offset) { }
     public BigDateTimeOffset(DateTimeOffset DateTimeOffset)
         : this(new BigDateTime(DateTimeOffset.DateTime), DateTimeOffset.Offset.TotalHours) { }
 
-    public BigInteger Year => BigDateTime.Year;
-    public BigInteger Month => BigDateTime.Month;
-    public BigInteger Day => BigDateTime.Day;
-    public BigInteger Hour => BigDateTime.Hour;
-    public BigInteger Minute => BigDateTime.Minute;
-    public BigDecimal Second => BigDateTime.Second;
-    public Planet Planet => BigDateTime.Planet;
+    public BigInteger Year => ApplyOffset().Year;
+    public BigInteger Month => ApplyOffset().Month;
+    public BigInteger Day => ApplyOffset().Day;
+    public BigInteger Hour => ApplyOffset().Hour;
+    public BigInteger Minute => ApplyOffset().Minute;
+    public BigDecimal Second => ApplyOffset().Second;
+    public BigInteger DayOfYear => ApplyOffset().DayOfYear;
+    public DayOfWeek DayOfWeek => ApplyOffset().DayOfWeek;
 
     public BigDateTimeOffset AddYears(BigInteger Value) {
         return new BigDateTimeOffset(BigDateTime.AddYears(Value), Offset);
     }
-    public BigDateTimeOffset AddMonths(BigInteger Value) {
+    public BigDateTimeOffset AddMonths(int Value) {
         return new BigDateTimeOffset(BigDateTime.AddMonths(Value), Offset);
     }
-    public BigDateTimeOffset AddDays(BigInteger Value) {
+    public BigDateTimeOffset AddDays(BigDecimal Value) {
         return new BigDateTimeOffset(BigDateTime.AddDays(Value), Offset);
     }
     public BigDateTimeOffset AddHours(BigDecimal Value) {
@@ -54,60 +60,34 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal? Of
         return AddMicroseconds(Value / 1000);
     }
     public BigDateTimeOffset Add(BigDateTimeOffset Value) {
-        return AddSeconds(Value.TotalSeconds());
+        return AddSeconds(Value.TotalSeconds);
     }
     public BigDecimal Subtract(BigDateTimeOffset Value) {
-        return TotalSeconds() - Value.TotalSeconds();
+        return TotalSeconds - Value.TotalSeconds;
     }
     public BigDateTimeOffset WithOffset(BigDecimal Hours) {
         return new BigDateTimeOffset(BigDateTime, Hours);
     }
-    public BigDecimal TotalSeconds() {
-        return BigDateTime.AddHours(Offset).TotalSeconds;
-    }
-    public BigInteger DaysInMonth() {
-        return BigDateTime.AddHours(Offset).DaysInMonth();
-    }
-    public BigInteger DayOfYear() {
-        return BigDateTime.AddHours(Offset).DayOfYear();
+    public BigInteger DaysInCurrentMonth() {
+        return ApplyOffset().DaysInCurrentMonth();
     }
     public string MonthOfYearName(bool Short = false) {
-        return BigDateTime.AddHours(Offset).MonthOfYearName(Short);
-    }
-    public int DayOfWeek() {
-        return BigDateTime.AddHours(Offset).DayOfWeek();
+        return ApplyOffset().MonthOfYearName(Short);
     }
     public string DayOfWeekName(bool Short = false) {
-        return BigDateTime.AddHours(Offset).DayOfWeekName(Short);
+        return ApplyOffset().DayOfWeekName(Short);
     }
     public int DaytimeSegment() {
-        return BigDateTime.AddHours(Offset).DaytimeSegment();
+        return ApplyOffset().DaytimeSegment();
     }
     public string DaytimeSegmentName() {
-        return BigDateTime.AddHours(Offset).DaytimeSegmentName();
+        return ApplyOffset().DaytimeSegmentName();
+    }
+    public BigDateTime ApplyOffset() {
+        return BigDateTime.AddHours(Offset);
     }
     public string ToString(string Format) {
-        for (int Index = 0; Index < Format.Length; Index++) {
-            Redo:
-            foreach ((string Find, Func<BigDateTimeOffset, object?> Replacement) in Planet.FormatTable) {
-                // Ensure find sequence would fit inside rest of string
-                if (Index + Find.Length > Format.Length) {
-                    continue;
-                }
-                // Ensure find sequence follows current index
-                if (Format[Index..(Index + Find.Length)] != Find) {
-                    continue;
-                }
-                // Get replacement string
-                string ReplacementStr = Replacement(this)?.ToString() ?? "";
-                // Replace find sequence
-                Format = Format[..Index] + ReplacementStr + Format[(Index + Find.Length)..];
-                Index += ReplacementStr.Length;
-                // Replace again
-                goto Redo;
-            }
-        }
-        return Format;
+        return Formatter.Format(Format, this);
     }
     /// <summary>
     /// Stringifies the BigDateTimeOffset like "1970/01/01 00:00:00 +01:00".
@@ -128,31 +108,30 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal? Of
         return ToString("ddd d MMM yyyy HH:mm:ss zzz");
     }
     public int CompareTo(BigDateTimeOffset Other) {
-        return TotalSeconds().CompareTo(Other.TotalSeconds());
+        return TotalSeconds.CompareTo(Other.TotalSeconds);
     }
     public int CompareTo(object? Other) {
         return Other is BigDateTimeOffset OtherBigDateTimeOffset ? CompareTo(OtherBigDateTimeOffset) : 1;
     }
 
-    public static BigDateTimeOffset Parse(string String, Planet? Planet = null) {
-        string[] Components = String.Split(['/', ':']);
+    public static BigDateTimeOffset Parse(string String) {
+        Parser Parser = new(String);
 
-        return new BigDateTimeOffset(
-            Components.ParseBigIntegerOrDefault(0),
-            Components.ParseBigIntegerOrDefault(1),
-            Components.ParseBigIntegerOrDefault(2),
-            Components.ParseBigDecimalOrDefault(3),
-            Components.ParseBigDecimalOrDefault(4),
-            Components.ParseBigDecimalOrDefault(5),
-            Components.ParseBigDecimalOrDefault(6) * (Planet ?? Planet.Earth).SecondsInHour
-                + Components.ParseBigDecimalOrDefault(7) * (Planet ?? Planet.Earth).SecondsInMinute
-                + Components.ParseBigDecimalOrDefault(8),
-            Planet
-        );
+        Parser.EatBigInteger(out BigInteger Year);
+        Parser.EatInt(out int Month, 1);
+        Parser.EatInt(out int Day, 1);
+        Parser.EatInt(out int Hour);
+        Parser.EatInt(out int Minute);
+        Parser.EatBigDecimal(out BigDecimal Second);
+        Parser.EatBigDecimal(out BigDecimal OffsetHours);
+        Parser.EatBigDecimal(out BigDecimal OffsetMinutes);
+        Parser.EatBigDecimal(out BigDecimal OffsetSeconds);
+
+        return new BigDateTimeOffset(Year, Month, Day, Hour, Minute, Second, (OffsetHours * SecondsInHour) + (OffsetMinutes * SecondsInMinute) + OffsetSeconds);
     }
-    public static bool TryParse(string String, out BigDateTimeOffset Result, Planet? Planet = null) {
+    public static bool TryParse(string String, out BigDateTimeOffset Result) {
         try {
-            Result = Parse(String, Planet);
+            Result = Parse(String);
             return true;
         }
         catch (Exception) {
@@ -160,11 +139,11 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal? Of
             return false;
         }
     }
-    public static BigDateTimeOffset CurrentUniversalTime() {
-        return DateTimeOffset.UtcNow;
+    public static BigDateTimeOffset Now(BigDecimal Offset) {
+        return new BigDateTimeOffset(DateTime.UtcNow, Offset);
     }
-    public static BigDateTimeOffset CurrentLocalTime() {
-        return DateTimeOffset.Now;
+    public static BigDateTimeOffset Now() {
+        return Now(DateTimeOffset.Now.Offset.TotalHours);
     }
     public static BigDateTimeOffset operator +(BigDateTimeOffset This, BigDateTimeOffset Other) {
         return This.Add(Other);

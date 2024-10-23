@@ -1,36 +1,55 @@
 ﻿using System.Numerics;
+using ExtendedNumerics;
 
-namespace ExtendedNumerics;
+namespace BigTime;
+
+using static EarthConstants;
 
 internal static class BigDateTimeExtensions {
-    /// <summary>
-    /// Returns null if the string is zero, otherwise the string.
-    /// </summary>
     public static string? NullIfZero(this string Number) {
         return BigDecimal.Parse(Number).IsZero() ? null : Number;
     }
-    /// <summary>
-    /// Gets the value at the array index as a string and parses it as a BigInteger, otherwise returns 0.
-    /// </summary>
-    public static BigInteger ParseBigIntegerOrDefault(this Array Array, int Index) {
-        if (Index < 0 || Index >= Array.Length) {
-            return default;
-        }
-        if (Array.GetValue(Index) is not string Value) {
-            return default;
-        }
-        return BigInteger.Parse(Value);
+    public static bool IsLeapYear(BigInteger Year) {
+        return Year % 4 == 0 && (Year % 100 != 0 || Year % 400 == 0);
     }
-    /// <summary>
-    /// Gets the value at the array index as a string and parses it as a BigDecimal, otherwise returns 0.
-    /// </summary>
-    public static BigDecimal ParseBigDecimalOrDefault(this Array Array, int Index) {
-        if (Index < 0 || Index >= Array.Length) {
-            return default;
+    public static int DaysInMonth(int Month, BigInteger Year) {
+        int[] DaysInMonthInYear = IsLeapYear(Year) ? DaysInMonthInLeapYear : DaysInMonthInCommonYear;
+        return DaysInMonthInYear[Month - 1];
+    }
+    public static BigInteger DayOfYear(BigInteger Year, int Month, int Day) {
+        int[] CumulativeDaysInMonthInYear = IsLeapYear(Year) ? CumulativeDaysInMonthInLeapYear : CumulativeDaysInMonthInCommonYear;
+        return CumulativeDaysInMonthInYear[Month - 1] + Day;
+    }
+    public static BigInteger LeapYearsBefore(BigInteger Year) {
+        return (Year / 4) - (Year / 100) + (Year / 400);
+    }
+    public static BigInteger CommonYearsBefore(BigInteger Year) {
+        return Year - LeapYearsBefore(Year);
+    }
+    public static BigDecimal TotalSecondsAt(BigInteger Year, int Month, int Day, int Hour, int Minute, BigDecimal Second) {
+        AssertInRange(Month, Day, Hour, Minute, Second);
+        return Second
+            + Minute * SecondsInMinute
+            + Hour * SecondsInHour
+            + (DayOfYear(Year, Month, Day) - 1) * SecondsInDay
+            + LeapYearsBefore(Year) * SecondsInLeapYear
+            + CommonYearsBefore(Year) * SecondsInCommonYear;
+    }
+    public static void AssertInRange(int? Month, int? Day, int? Hour, int? Minute, BigDecimal? Second) {
+        if (Month is not null && (Month is < 1 or > 12)) {
+            throw new ArgumentOutOfRangeException(nameof(Month), "Month must be 1 to 12");
         }
-        if (Array.GetValue(Index) is not string Value) {
-            return default;
+        if (Day is not null && (Day is < 1 or > 31)) {
+            throw new ArgumentOutOfRangeException(nameof(Day), "Day must be 1 to 31");
         }
-        return BigDecimal.Parse(Value);
+        if (Hour is not null && (Hour is < 0 or > 24)) {
+            throw new ArgumentOutOfRangeException(nameof(Hour), "Hour must be 0 to 24");
+        }
+        if (Minute is not null && (Minute is < 0 or > 60)) {
+            throw new ArgumentOutOfRangeException(nameof(Minute), "Minute must be 0 to 60");
+        }
+        if (Second is not null && (Second < 0 || Second > 60)) {
+            throw new ArgumentOutOfRangeException(nameof(Second), "Second must be 0 to 60");
+        }
     }
 }

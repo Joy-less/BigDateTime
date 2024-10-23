@@ -7,6 +7,6 @@
     <NoWarn>IDE0130</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="2025.1003.0.225" />
+    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.0.280" />
   </ItemGroup>
 </Project>
