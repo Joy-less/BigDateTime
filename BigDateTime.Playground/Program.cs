@@ -1,7 +1,7 @@
 ﻿using BigTime;
 
-Console.WriteLine(BigDateTime.Parse("2012/2/29"));
-Console.WriteLine(new BigDateTime(2012, 2, 29));
+Console.WriteLine(BigDateTime.Parse("2012/2/27")); // Why does this return 2012/2/26 ???
+Console.WriteLine(new BigDateTime(2012, 2, 27));
 
 Console.WriteLine(new BigDateTime(2013, 2, 28));
 

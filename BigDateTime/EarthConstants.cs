@@ -6,9 +6,9 @@ public static class EarthConstants {
     public const int HoursInDay = 24;
 
     public const int SecondsInHour = SecondsInMinute * MinutesInHour;
-    public const int SecondsInDay = SecondsInMinute * MinutesInHour * HoursInDay;
-    public const int SecondsInCommonYear = SecondsInMinute * MinutesInHour * HoursInDay * DaysInCommonYear;
-    public const int SecondsInLeapYear = SecondsInMinute * MinutesInHour * HoursInDay * DaysInLeapYear;
+    public const int SecondsInDay = SecondsInHour * HoursInDay;
+    public const int SecondsInCommonYear = SecondsInDay * DaysInCommonYear;
+    public const int SecondsInLeapYear = SecondsInDay * DaysInLeapYear;
 
     public static readonly int[] DaysInMonthInCommonYear = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     public static readonly int[] DaysInMonthInLeapYear = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];

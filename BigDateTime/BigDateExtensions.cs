@@ -9,18 +9,19 @@ internal static class BigDateTimeExtensions {
     public static string? NullIfZero(this string Number) {
         return BigDecimal.Parse(Number).IsZero() ? null : Number;
     }
-    public static bool IsLeapYear(BigInteger Year) {
-        return Year % 4 == 0 && (Year % 100 != 0 || Year % 400 == 0);
-    }
     public static int DaysInMonth(int Month, BigInteger Year) {
         int[] DaysInMonthInYear = IsLeapYear(Year) ? DaysInMonthInLeapYear : DaysInMonthInCommonYear;
         return DaysInMonthInYear[Month - 1];
     }
-    public static BigInteger DayOfYear(BigInteger Year, int Month, int Day) {
+    public static int DayOfYear(BigInteger Year, int Month, int Day) {
         int[] CumulativeDaysInMonthInYear = IsLeapYear(Year) ? CumulativeDaysInMonthInLeapYear : CumulativeDaysInMonthInCommonYear;
         return CumulativeDaysInMonthInYear[Month - 1] + Day;
     }
+    public static bool IsLeapYear(BigInteger Year) {
+        return Year % 4 == 0 && (Year % 100 != 0 || Year % 400 == 0);
+    }
     public static BigInteger LeapYearsBefore(BigInteger Year) {
+        Year -= 1;
         return (Year / 4) - (Year / 100) + (Year / 400);
     }
     public static BigInteger CommonYearsBefore(BigInteger Year) {

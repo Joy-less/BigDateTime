@@ -96,13 +96,13 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
     }
 
     public BigInteger Year {
-        get => BlackMagic.GetYear(TotalSeconds.WholeValue);
+        get => BlackMagic.Year(TotalSeconds.WholeValue);
     }
     public int Month {
-        get => BlackMagic.GetMonthOfYear(TotalSeconds.WholeValue);
+        get => BlackMagic.MonthOfYear(TotalSeconds.WholeValue);
     }
     public int Day {
-        get => BlackMagic.GetDayOfMonth(TotalSeconds.WholeValue);
+        get => BlackMagic.DayOfMonth(TotalSeconds.WholeValue);
     }
     public int Hour {
         get => (int)(TotalSeconds % SecondsInDay / SecondsInHour).WholeValue;
@@ -114,7 +114,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
         get => TotalSeconds % SecondsInMinute;
     }
     public int DayOfYear {
-        get => BlackMagic.GetDayOfYear(TotalSeconds.WholeValue);
+        get => BlackMagic.DayOfYear(TotalSeconds.WholeValue);
     }
     public DayOfWeek DayOfWeek {
         get => (DayOfWeek)(int)(TotalSeconds / SecondsInDay % DaysInWeek).WholeValue;
