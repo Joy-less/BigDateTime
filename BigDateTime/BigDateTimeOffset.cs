@@ -31,6 +31,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     public BigDecimal Second => ApplyOffset().Second;
     public BigInteger DayOfYear => ApplyOffset().DayOfYear;
     public DayOfWeek DayOfWeek => ApplyOffset().DayOfWeek;
+    public int DaytimeSegment => ApplyOffset().DaytimeSegment;
 
     public BigDateTimeOffset AddYears(BigInteger Value) {
         return new BigDateTimeOffset(BigDateTime.AddYears(Value), Offset);
@@ -68,17 +69,11 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     public BigDateTimeOffset WithOffset(BigDecimal Hours) {
         return new BigDateTimeOffset(BigDateTime, Hours);
     }
-    public BigInteger DaysInCurrentMonth() {
-        return ApplyOffset().DaysInCurrentMonth();
-    }
     public string MonthOfYearName(bool Short = false) {
         return ApplyOffset().MonthOfYearName(Short);
     }
     public string DayOfWeekName(bool Short = false) {
         return ApplyOffset().DayOfWeekName(Short);
-    }
-    public int DaytimeSegment() {
-        return ApplyOffset().DaytimeSegment();
     }
     public string DaytimeSegmentName() {
         return ApplyOffset().DaytimeSegmentName();

@@ -74,4 +74,8 @@ internal static class Formatter {
         }
         return Format;
     }
+
+    private static string? NullIfZero(this string Number) {
+        return BigDecimal.Parse(Number).IsZero() ? null : Number;
+    }
 }

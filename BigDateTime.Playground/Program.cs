@@ -1,9 +1,15 @@
 ﻿using BigTime;
 
-Console.WriteLine(BigDateTime.Parse("2012/2/27")); // Why does this return 2012/2/26 ???
-Console.WriteLine(new BigDateTime(2012, 2, 27));
+Console.WriteLine(new BigDateTime(-5, 1, 3));
+Console.WriteLine(new BigDateTime(0, 2, 3));
+Console.ReadLine();
+
+Console.WriteLine(BigDateTime.Parse("2012/2/28"));
+Console.WriteLine(new BigDateTime(2012, 2, 28));
 
 Console.WriteLine(new BigDateTime(2013, 2, 28));
+
+Console.WriteLine(new BigDateTime(2016, 2, 28));
 
 Console.WriteLine(BigDateTime.Parse("2023/2/2").DayOfWeekName() + " -> " + BigDateTime.Parse("2023/2/3").DayOfWeekName());
 Console.WriteLine(DateTime.Parse("2023/2/2").DayOfWeek + " -> " + DateTime.Parse("2023/2/3").DayOfWeek);

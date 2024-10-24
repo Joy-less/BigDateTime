@@ -1,4 +1,6 @@
-﻿namespace BigTime;
+﻿using System.Numerics;
+
+namespace BigTime;
 
 public static class EarthConstants {
     public const int SecondsInMinute = 60;
@@ -31,4 +33,23 @@ public static class EarthConstants {
     public static readonly string[] MonthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     public static readonly string[] ShortMonthsOfYear = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     public const int MonthsInYear = 12;
+
+    public static bool IsLeapYear(BigInteger Year) {
+        return Year % 4 == 0 && (Year % 100 != 0 || Year % 400 == 0);
+    }
+    public static BigInteger LeapYearsBefore(BigInteger Year) {
+        Year -= 1;
+        return (Year / 4) - (Year / 100) + (Year / 400);
+    }
+    public static BigInteger CommonYearsBefore(BigInteger Year) {
+        return Year - LeapYearsBefore(Year);
+    }
+    public static int DaysInMonth(int Month, BigInteger Year) {
+        int[] DaysInMonthInYear = IsLeapYear(Year) ? DaysInMonthInLeapYear : DaysInMonthInCommonYear;
+        return DaysInMonthInYear[Month - 1];
+    }
+    public static int DayOfYear(BigInteger Year, int Month, int Day) {
+        int[] CumulativeDaysInMonthInYear = IsLeapYear(Year) ? CumulativeDaysInMonthInLeapYear : CumulativeDaysInMonthInCommonYear;
+        return CumulativeDaysInMonthInYear[Month - 1] + Day;
+    }
 }

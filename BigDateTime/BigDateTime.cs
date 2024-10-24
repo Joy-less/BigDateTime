@@ -4,7 +4,7 @@ using ExtendedNumerics;
 namespace BigTime;
 
 using static EarthConstants;
-using static BigDateTimeExtensions;
+using static Extensions;
 
 public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComparable<BigDateTime> {
     public readonly BigDecimal TotalSeconds = TotalSeconds;
@@ -14,7 +14,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
     public BigDateTime(BigInteger Year, int Month, int Day)
         : this(Year, Month, Day, 0, 0, 0) { }
     public BigDateTime(DateTime DateTime)
-        : this(DateTime.Subtract(DateTime.MinValue).TotalSeconds + SecondsInCommonYear) { } // Add seconds in the year 0, because DateTime starts at year 1 not year 0
+        : this(DateTime.TotalSeconds()) { }
 
     public BigDateTime AddYears(BigInteger Value) {
         return new BigDateTime(Year + Value, Month, Day, Hour, Minute, Second);
@@ -49,20 +49,14 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
     public BigDecimal Subtract(BigDateTime Value) {
         return TotalSeconds - Value.TotalSeconds;
     }
-    public int DaysInCurrentMonth() {
-        return DaysInMonth(Month, Year);
-    }
     public string MonthOfYearName(bool Short = false) {
         return Short ? ShortMonthsOfYear[Month - 1] : MonthsOfYear[Month - 1];
     }
     public string DayOfWeekName(bool Short = false) {
         return Short ? ShortDaysOfWeek[(int)DayOfWeek] : DaysOfWeek[(int)DayOfWeek];
     }
-    public int DaytimeSegment() {
-        return Hour / HoursInDaytimeSegment;
-    }
     public string DaytimeSegmentName() {
-        return DaytimeSegments[DaytimeSegment()];
+        return DaytimeSegments[DaytimeSegment];
     }
     /// <summary>
     /// Stringifies the BigDateTime using a format string.
@@ -118,6 +112,9 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
     }
     public DayOfWeek DayOfWeek {
         get => (DayOfWeek)(int)(TotalSeconds / SecondsInDay % DaysInWeek).WholeValue;
+    }
+    public int DaytimeSegment {
+        get => Hour / HoursInDaytimeSegment;
     }
 
     public static BigDateTime Parse(string String) {
