@@ -11,7 +11,17 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>BigDateTime</Title>
     <Description>A DateTime/DateTimeOffset alternative using BigIntegers and BigDecimals.</Description>
+    <PackageProjectUrl>https://github.com/Joy-less/BigDateTime</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Joy-less/BigDateTime</RepositoryUrl>
+    <PackageTags>DateTime</PackageTags>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.0.280" />
   </ItemGroup>
