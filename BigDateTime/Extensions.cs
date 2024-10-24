@@ -3,15 +3,19 @@ using ExtendedNumerics;
 
 namespace BigTime;
 
-using static EarthConstants;
+using static GregorianCalendarConstants;
 
 internal static class Extensions {
     /// <summary>
-    /// Returns the <see cref="DateTime"/>'s total number of seconds since 0000/00/00 00:00:00.
+    /// Returns the total number of seconds since 0000/00/00 00:00:00.
     /// </summary>
     public static BigDecimal TotalSeconds(this DateTime DateTime) {
         return DateTime.Subtract(DateTime.MinValue).TotalSeconds
             + SecondsInCommonYear; // Add seconds in year 0, because DateTime starts at year 1
+    }
+    /// <inheritdoc cref="TotalSeconds(DateTime)"/>
+    public static BigDecimal TotalSeconds(this DateTimeOffset DateTimeOffset) {
+        return DateTimeOffset.UtcDateTime.TotalSeconds();
     }
     /// <summary>
     /// Returns the date and time's total number of seconds since 0000/00/00 00:00:00.

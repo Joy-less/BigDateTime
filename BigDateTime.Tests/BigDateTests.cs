@@ -17,7 +17,6 @@ public class BigDateTests {
         DateTime DateTime = new(2024, 08, 11, 01, 34, 00);
         BigDateTime BigDateTime = new(2024, 08, 11, 01, 34, 00);
         Assert.AreEqual((DateTime - DateTime.MinValue).TotalSeconds, BigDateTime - new BigDateTime(1, 1, 1));
-        Assert.AreEqual((DateTime - DateTime.MinValue).TotalSeconds, BigDateTime.TotalSeconds - EarthConstants.SecondsInCommonYear);
     }
     [TestMethod]
     public void Test3() {

@@ -1,15 +1,16 @@
-﻿using System.Numerics;
+﻿using System.Globalization;
+using System.Numerics;
 using ExtendedNumerics;
 
 namespace BigTime;
 
-using static EarthConstants;
+using static GregorianCalendarConstants;
 using static Extensions;
 
 /// <summary>
-/// An arbitrary precision DateTime.
+/// An arbitrary size and precision DateTime in the Gregorian calendar.
 /// </summary>
-public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComparable<BigDateTime> {
+public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDateTime>, IComparable<DateTime> {
     /// <summary>
     /// The total number of seconds since 0000/00/00 00:00:00.
     /// </summary>
@@ -26,139 +27,225 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
     public BigDateTime(BigInteger Year, int Month, int Day)
         : this(Year, Month, Day, 0, 0, 0) { }
     /// <summary>
-    /// Constructs a <see cref="BigDateTime"/> from a <see cref="DateTime"/>.
+    /// Constructs a <see cref="BigDateTime"/> from a less-flexible <see cref="DateTime"/>.
     /// </summary>
     public BigDateTime(DateTime DateTime)
         : this(DateTime.TotalSeconds()) { }
 
     /// <summary>
-    /// Returns a new <see cref="BigDateTime"/> with the years added.
+    /// Adds the number of years.
     /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
     public BigDateTime AddYears(BigInteger Value) {
         return AddMonths(Value * 12);
     }
     /// <summary>
-    /// Returns a new <see cref="BigDateTime"/> with the months added.
+    /// Adds the number of months.
     /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
     public BigDateTime AddMonths(BigInteger Value) {
         return new BigDateTime(BlackMagic.AddMonths(TotalSeconds, Value));
     }
     /// <summary>
-    /// Returns a new <see cref="BigDateTime"/> with the days added.
+    /// Adds the number of days.
     /// </summary>
     public BigDateTime AddDays(BigDecimal Value) {
         return new BigDateTime(TotalSeconds + (Value * SecondsInDay));
     }
     /// <summary>
-    /// Returns a new <see cref="BigDateTime"/> with the hours added.
+    /// Adds the number of hours.
     /// </summary>
     public BigDateTime AddHours(BigDecimal Value) {
         return new BigDateTime(TotalSeconds + (Value * SecondsInHour));
     }
     /// <summary>
-    /// Returns a new <see cref="BigDateTime"/> with the minutes added.
+    /// Adds the number of minutes.
     /// </summary>
     public BigDateTime AddMinutes(BigDecimal Value) {
         return new BigDateTime(TotalSeconds + (Value * SecondsInMinute));
     }
     /// <summary>
-    /// Returns a new <see cref="BigDateTime"/> with the seconds added.
+    /// Adds the number of seconds.
     /// </summary>
     public BigDateTime AddSeconds(BigDecimal Value) {
         return new BigDateTime(TotalSeconds + Value);
     }
     /// <summary>
-    /// Returns a new <see cref="BigDateTime"/> with the milliseconds added.
+    /// Adds the number of milliseconds.
     /// </summary>
     public BigDateTime AddMilliseconds(BigDecimal Value) {
         return AddSeconds(Value / 1000);
     }
     /// <summary>
-    /// Returns a new <see cref="BigDateTime"/> with the microseconds added.
+    /// Adds the number of microseconds.
     /// </summary>
     public BigDateTime AddMicroseconds(BigDecimal Value) {
         return AddMilliseconds(Value / 1000);
     }
     /// <summary>
-    /// Returns a new <see cref="BigDateTime"/> with the nanoseconds added.
+    /// Adds the number of nanoseconds.
     /// </summary>
     public BigDateTime AddNanoseconds(BigDecimal Value) {
         return AddMicroseconds(Value / 1000);
     }
+    /// <summary>
+    /// Adds the total seconds of <paramref name="Value"/>.
+    /// </summary>
     public BigDateTime Add(BigDateTime Value) {
         return AddSeconds(Value.TotalSeconds);
     }
+    /// <summary>
+    /// Returns the number of seconds between this and <paramref name="Value"/>.
+    /// </summary>
     public BigDecimal Subtract(BigDateTime Value) {
         return TotalSeconds - Value.TotalSeconds;
     }
-    public string MonthOfYearName(bool Short = false) {
-        return Short ? ShortMonthsOfYear[Month - 1] : MonthsOfYear[Month - 1];
-    }
-    public string DayOfWeekName(bool Short = false) {
-        return Short ? ShortDaysOfWeek[(int)DayOfWeek] : DaysOfWeek[(int)DayOfWeek];
-    }
-    public string DaytimeSegmentName() {
-        return DaytimeSegments[DaytimeSegment];
+    /// <summary>
+    /// Returns the full name of the month according to the given or invariant culture.<br/>
+    /// Example: January
+    /// </summary>
+    public string MonthName(CultureInfo? Culture = null) {
+        Culture ??= CultureInfo.InvariantCulture;
+        return Culture.DateTimeFormat.GetMonthName(Month);
     }
     /// <summary>
-    /// Stringifies the BigDateTime using a format string.
+    /// Returns the abbreviated name of the month according to the given or invariant culture.<br/>
+    /// Example: Jan
+    /// </summary>
+    public string AbbreviatedMonthName(CultureInfo? Culture = null) {
+        Culture ??= CultureInfo.InvariantCulture;
+        return Culture.DateTimeFormat.GetAbbreviatedMonthName(Month);
+    }
+    /// <summary>
+    /// Returns the full name of the day of the week according to the given or invariant culture.<br/>
+    /// Example: Monday
+    /// </summary>
+    public string DayOfWeekName(CultureInfo? Culture = null) {
+        Culture ??= CultureInfo.InvariantCulture;
+        return Culture.DateTimeFormat.GetDayName(DayOfWeek);
+    }
+    /// <summary>
+    /// Returns the abbreviated name of the day of the week according to the given or invariant culture.<br/>
+    /// Example: Mon
+    /// </summary>
+    public string AbbreviatedDayOfWeekName(CultureInfo? Culture = null) {
+        Culture ??= CultureInfo.InvariantCulture;
+        return Culture.DateTimeFormat.GetAbbreviatedDayName(DayOfWeek);
+    }
+    /// <summary>
+    /// Returns the name of the daytime segment according to the given or invariant culture.<br/>
+    /// Example: AM
+    /// </summary>
+    public string DaytimeSegmentName(CultureInfo? Culture = null) {
+        Culture ??= CultureInfo.InvariantCulture;
+        return DaytimeSegment switch {
+            DaytimeSegment.AM => Culture.DateTimeFormat.AMDesignator,
+            DaytimeSegment.PM => Culture.DateTimeFormat.PMDesignator,
+            _ => throw new Exception($"Invalid daytime segment ('{DaytimeSegment}')")
+        };
+    }
+    /// <summary>
+    /// Stringifies the date and time using a format string
+    /// (see <see href="https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings">Format Strings</see>).
     /// </summary>
     public string ToString(string Format) {
         return new BigDateTimeOffset(this).ToString(Format);
     }
     /// <summary>
-    /// Stringifies the BigDateTime like "1970/01/01 00:00:00".
+    /// Stringifies the date and time like "1970/01/01 00:00:00".
     /// </summary>
     public override string ToString() {
         return ToString("yyyy/MM/dd HH:mm:ss");
     }
     /// <summary>
-    /// Stringifies the BigDateTime like "Thursday 1 January 1970 00:00:00".
+    /// Stringifies the date and time like "Thursday 1 January 1970 00:00:00".
     /// </summary>
     public string ToLongString() {
         return ToString("dddd d MMMM yyyy HH:mm:ss");
     }
     /// <summary>
-    /// Stringifies the BigDateTime like "Thu 1 Jan 1970 00:00:00".
+    /// Stringifies the date and time like "Thu 1 Jan 1970 00:00:00".
     /// </summary>
     public string ToShortString() {
         return ToString("ddd d MMM yyyy HH:mm:ss");
     }
+
+    /// <summary>
+    /// Compares this <see cref="BigDateTime"/> with the <see cref="BigDateTime"/> for sorting.
+    /// </summary>
     public int CompareTo(BigDateTime Other) {
         return TotalSeconds.CompareTo(Other.TotalSeconds);
     }
-    public int CompareTo(object? Other) {
-        return Other is BigDateTime OtherBigDateTime ? CompareTo(OtherBigDateTime) : 1;
+    /// <summary>
+    /// Compares this <see cref="BigDateTime"/> with the <see cref="DateTime"/> for sorting.
+    /// </summary>
+    public int CompareTo(DateTime Other) {
+        return TotalSeconds.CompareTo(Other.TotalSeconds());
     }
 
+    /// <summary>
+    /// Calculates the year.
+    /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
     public BigInteger Year {
         get => BlackMagic.GetYear(TotalSeconds.WholeValue);
     }
+    /// <summary>
+    /// Calculates the month of the year.
+    /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
     public int Month {
         get => BlackMagic.GetMonthOfYear(TotalSeconds.WholeValue);
     }
+    /// <summary>
+    /// Calculates the day of the month.
+    /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
     public int Day {
         get => BlackMagic.GetDayOfMonth(TotalSeconds.WholeValue);
     }
+    /// <summary>
+    /// Calculates the hour.
+    /// </summary>
     public int Hour {
-        get => (int)(TotalSeconds % SecondsInDay / SecondsInHour).WholeValue;
+        get => (int)(TotalSeconds.WholeValue % SecondsInDay / SecondsInHour);
     }
+    /// <summary>
+    /// Calculates the minute.
+    /// </summary>
     public int Minute {
-        get => (int)(TotalSeconds % SecondsInHour / SecondsInMinute).WholeValue;
+        get => (int)(TotalSeconds.WholeValue % SecondsInHour / SecondsInMinute);
     }
+    /// <summary>
+    /// Calculates the second.
+    /// </summary>
     public BigDecimal Second {
         get => TotalSeconds % SecondsInMinute;
     }
+    /// <summary>
+    /// Calculates the day of the year.
+    /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
     public int DayOfYear {
         get => BlackMagic.GetDayOfYear(TotalSeconds.WholeValue);
     }
+    /// <summary>
+    /// Calculates the day of the week.
+    /// </summary>
     public DayOfWeek DayOfWeek {
-        get => (DayOfWeek)(int)(TotalSeconds / SecondsInDay % DaysInWeek).WholeValue;
+        get => (DayOfWeek)(int)(TotalSeconds.WholeValue % DaysInWeek / SecondsInDay);
     }
-    public int DaytimeSegment {
-        get => Hour / HoursInDaytimeSegment;
+    /// <summary>
+    /// Calculates the daytime segment (AM/PM).
+    /// </summary>
+    public DaytimeSegment DaytimeSegment {
+        get => (DaytimeSegment)(Hour / HoursInDaytimeSegment);
     }
 
+    /// <summary>
+    /// Parses a <see cref="BigDateTime"/> from the string or throws an exception.
+    /// </summary>
+    /// <remarks>Currently only parses strings in the format "y/M/d H:m:s", where each component is optional and each separator is interchangeable.</remarks>
     public static BigDateTime Parse(string String) {
         Parser Parser = new(String);
 
@@ -171,6 +258,10 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
 
         return new BigDateTime(Year, Month, Day, Hour, Minute, Second);
     }
+    /// <summary>
+    /// Parses a <see cref="BigDateTime"/> from the string or returns false.
+    /// </summary>
+    /// <remarks>Currently only parses strings in the format "y/M/d H:m:s", where each component is optional and each separator is interchangeable.</remarks>
     public static bool TryParse(string String, out BigDateTime Result) {
         try {
             Result = Parse(String);
@@ -181,22 +272,41 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
             return false;
         }
     }
+    /// <summary>
+    /// Returns a <see cref="BigDateTime"/> representing the current time at the given UTC offset.
+    /// </summary>
     public static BigDateTime Now(BigDecimal Offset) {
         return new BigDateTime(DateTime.UtcNow).AddHours(Offset);
     }
+    /// <summary>
+    /// Returns a <see cref="BigDateTime"/> representing the current time at the local UTC offset.
+    /// </summary>
     public static BigDateTime Now() {
         return Now(DateTimeOffset.Now.Offset.TotalHours);
     }
+
+    /// <inheritdoc cref="Add(BigDateTime)"/>
     public static BigDateTime operator +(BigDateTime This, BigDateTime Other) {
         return This.Add(Other);
     }
+    /// <inheritdoc cref="Subtract(BigDateTime)"/>
     public static BigDecimal operator -(BigDateTime This, BigDateTime Other) {
         return This.Subtract(Other);
     }
-    public static explicit operator DateTime(BigDateTime BigDateTime) {
-        return new DateTime(TimeSpan.FromSeconds((double)BigDateTime.TotalSeconds).Ticks);
-    }
+    /// <summary>
+    /// Converts the <see cref="DateTime"/> to a <see cref="BigDateTime"/>.
+    /// </summary>
     public static implicit operator BigDateTime(DateTime DateTime) {
         return new BigDateTime(DateTime);
+    }
+    /// <summary>
+    /// Converts the <see cref="BigDateTime"/> to a <see cref="DateTime"/>.
+    /// </summary>
+    /// <remarks>
+    /// If <see cref="Second"/> is very precise, it loses precision.<br/>
+    /// If <see cref="Year"/> is outside 1 to 9999, an exception is thrown.
+    /// </remarks>
+    public static explicit operator DateTime(BigDateTime BigDateTime) {
+        return new DateTime(TimeSpan.FromSeconds((double)BigDateTime.TotalSeconds - SecondsInCommonYear).Ticks); // Subtract seconds in year 0, because DateTime starts at year 1
     }
 }

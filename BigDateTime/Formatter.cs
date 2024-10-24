@@ -2,12 +2,12 @@
 
 namespace BigTime;
 
-using static EarthConstants;
+using static GregorianCalendarConstants;
 
 internal static class Formatter {
     private static readonly Dictionary<string, Func<BigDateTimeOffset, object?>> FormatTable = new() {
         {"dddd", BDTO => BDTO.DayOfWeekName()},
-        {"ddd", BDTO => BDTO.DayOfWeekName(true)},
+        {"ddd", BDTO => BDTO.AbbreviatedDayOfWeekName()},
         {"dd", BDTO => BDTO.Day.ToString().PadLeft(2, '0')},
         {"d", BDTO => BDTO.Day},
         {"ffffffff", BDTO => BDTO.Second.GetFractionalPart()},
@@ -32,8 +32,8 @@ internal static class Formatter {
         {"H", BDTO => BDTO.Hour},
         {"mm", BDTO => BDTO.Minute.ToString("D2")},
         {"m", BDTO => BDTO.Minute},
-        {"MMMM", BDTO => BDTO.MonthOfYearName()},
-        {"MMM", BDTO => BDTO.MonthOfYearName(true)},
+        {"MMMM", BDTO => BDTO.MonthName()},
+        {"MMM", BDTO => BDTO.AbbreviatedMonthName()},
         {"MM", BDTO => BDTO.Month.ToString("D2")},
         {"M", BDTO => BDTO.Month},
         {"ss", BDTO => BDTO.Second.WholeValue.ToString().PadLeft(2, '0')},

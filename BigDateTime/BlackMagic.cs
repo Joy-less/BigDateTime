@@ -3,14 +3,14 @@ using System.Numerics;
 
 namespace BigTime;
 
-using static EarthConstants;
+using static GregorianCalendarConstants;
 
 /// <summary>
 /// So you might be thinking: 「 What the hell is going on here? 」<br/>
 /// And you're not alone. I just took this stuff from DateTime and adapted it.<br/>
 /// Blame Pope Gregory XIII for introducing the Gregorian calendar.
 /// </summary>
-public static class BlackMagic {
+internal static class BlackMagic {
     // Euclidean Affine Functions Algorithm (EAF) constants
     private const uint EafMultiplier = (uint)(((1UL << 32) + DaysIn4Years - 1) / DaysIn4Years);
     private const uint EafDivider = EafMultiplier * 4;
