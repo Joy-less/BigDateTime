@@ -6,40 +6,82 @@ namespace BigTime;
 using static EarthConstants;
 using static Extensions;
 
+/// <summary>
+/// An arbitrary precision DateTime.
+/// </summary>
 public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComparable<BigDateTime> {
+    /// <summary>
+    /// The total number of seconds since 0000/00/00 00:00:00.
+    /// </summary>
     public readonly BigDecimal TotalSeconds = TotalSeconds;
 
+    /// <summary>
+    /// Constructs a <see cref="BigDateTime"/> from a date and time.
+    /// </summary>
     public BigDateTime(BigInteger Year, int Month, int Day, int Hour, int Minute, BigDecimal Second)
         : this(TotalSecondsAt(Year, Month, Day, Hour, Minute, Second)) { }
+    /// <summary>
+    /// Constructs a <see cref="BigDateTime"/> from a date.
+    /// </summary>
     public BigDateTime(BigInteger Year, int Month, int Day)
         : this(Year, Month, Day, 0, 0, 0) { }
+    /// <summary>
+    /// Constructs a <see cref="BigDateTime"/> from a <see cref="DateTime"/>.
+    /// </summary>
     public BigDateTime(DateTime DateTime)
         : this(DateTime.TotalSeconds()) { }
 
+    /// <summary>
+    /// Returns a new <see cref="BigDateTime"/> with the years added.
+    /// </summary>
     public BigDateTime AddYears(BigInteger Value) {
-        return new BigDateTime(Year + Value, Month, Day, Hour, Minute, Second);
+        return AddMonths(Value * 12);
     }
-    public BigDateTime AddMonths(int Value) {
-        return new BigDateTime(Year, Month + Value, Day, Hour, Minute, Second);
+    /// <summary>
+    /// Returns a new <see cref="BigDateTime"/> with the months added.
+    /// </summary>
+    public BigDateTime AddMonths(BigInteger Value) {
+        return new BigDateTime(BlackMagic.AddMonths(TotalSeconds, Value));
     }
+    /// <summary>
+    /// Returns a new <see cref="BigDateTime"/> with the days added.
+    /// </summary>
     public BigDateTime AddDays(BigDecimal Value) {
         return new BigDateTime(TotalSeconds + (Value * SecondsInDay));
     }
+    /// <summary>
+    /// Returns a new <see cref="BigDateTime"/> with the hours added.
+    /// </summary>
     public BigDateTime AddHours(BigDecimal Value) {
         return new BigDateTime(TotalSeconds + (Value * SecondsInHour));
     }
+    /// <summary>
+    /// Returns a new <see cref="BigDateTime"/> with the minutes added.
+    /// </summary>
     public BigDateTime AddMinutes(BigDecimal Value) {
         return new BigDateTime(TotalSeconds + (Value * SecondsInMinute));
     }
+    /// <summary>
+    /// Returns a new <see cref="BigDateTime"/> with the seconds added.
+    /// </summary>
     public BigDateTime AddSeconds(BigDecimal Value) {
         return new BigDateTime(TotalSeconds + Value);
     }
+    /// <summary>
+    /// Returns a new <see cref="BigDateTime"/> with the milliseconds added.
+    /// </summary>
     public BigDateTime AddMilliseconds(BigDecimal Value) {
         return AddSeconds(Value / 1000);
     }
+    /// <summary>
+    /// Returns a new <see cref="BigDateTime"/> with the microseconds added.
+    /// </summary>
     public BigDateTime AddMicroseconds(BigDecimal Value) {
         return AddMilliseconds(Value / 1000);
     }
+    /// <summary>
+    /// Returns a new <see cref="BigDateTime"/> with the nanoseconds added.
+    /// </summary>
     public BigDateTime AddNanoseconds(BigDecimal Value) {
         return AddMicroseconds(Value / 1000);
     }
@@ -90,13 +132,13 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
     }
 
     public BigInteger Year {
-        get => BlackMagic.Year(TotalSeconds.WholeValue);
+        get => BlackMagic.GetYear(TotalSeconds.WholeValue);
     }
     public int Month {
-        get => BlackMagic.MonthOfYear(TotalSeconds.WholeValue);
+        get => BlackMagic.GetMonthOfYear(TotalSeconds.WholeValue);
     }
     public int Day {
-        get => BlackMagic.DayOfMonth(TotalSeconds.WholeValue);
+        get => BlackMagic.GetDayOfMonth(TotalSeconds.WholeValue);
     }
     public int Hour {
         get => (int)(TotalSeconds % SecondsInDay / SecondsInHour).WholeValue;
@@ -108,7 +150,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable, IComp
         get => TotalSeconds % SecondsInMinute;
     }
     public int DayOfYear {
-        get => BlackMagic.DayOfYear(TotalSeconds.WholeValue);
+        get => BlackMagic.GetDayOfYear(TotalSeconds.WholeValue);
     }
     public DayOfWeek DayOfWeek {
         get => (DayOfWeek)(int)(TotalSeconds / SecondsInDay % DaysInWeek).WholeValue;

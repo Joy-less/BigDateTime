@@ -1,10 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <VersionPrefix>1.0</VersionPrefix>
     <TargetFrameworks>net6.0;net7.0;net8.0;netstandard2.1</TargetFrameworks>
     <LangVersion>12</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoWarn>IDE0130</NoWarn>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>BigDateTime</Title>
+    <Description>A DateTime/DateTimeOffset alternative using BigIntegers and BigDecimals.</Description>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.0.280" />

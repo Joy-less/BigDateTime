@@ -6,10 +6,16 @@ namespace BigTime;
 using static EarthConstants;
 
 internal static class Extensions {
+    /// <summary>
+    /// Returns the <see cref="DateTime"/>'s total number of seconds since 0000/00/00 00:00:00.
+    /// </summary>
     public static BigDecimal TotalSeconds(this DateTime DateTime) {
         return DateTime.Subtract(DateTime.MinValue).TotalSeconds
             + SecondsInCommonYear; // Add seconds in year 0, because DateTime starts at year 1
     }
+    /// <summary>
+    /// Returns the date and time's total number of seconds since 0000/00/00 00:00:00.
+    /// </summary>
     public static BigDecimal TotalSecondsAt(BigInteger Year, int Month, int Day, int Hour, int Minute, BigDecimal Second) {
         AssertInRange(Month, Day, Hour, Minute, Second);
         return Second
@@ -19,6 +25,9 @@ internal static class Extensions {
             + LeapYearsBefore(Year) * SecondsInLeapYear
             + CommonYearsBefore(Year) * SecondsInCommonYear;
     }
+    /// <summary>
+    /// Throws an exception if any component is outside the valid range.
+    /// </summary>
     public static void AssertInRange(int? Month, int? Day, int? Hour, int? Minute, BigDecimal? Second) {
         if (Month is not null && (Month is < 1 or > 12)) {
             throw new ArgumentOutOfRangeException(nameof(Month), "Month must be 1 to 12");

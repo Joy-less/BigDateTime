@@ -36,7 +36,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     public BigDateTimeOffset AddYears(BigInteger Value) {
         return new BigDateTimeOffset(BigDateTime.AddYears(Value), Offset);
     }
-    public BigDateTimeOffset AddMonths(int Value) {
+    public BigDateTimeOffset AddMonths(BigInteger Value) {
         return new BigDateTimeOffset(BigDateTime.AddMonths(Value), Offset);
     }
     public BigDateTimeOffset AddDays(BigDecimal Value) {
@@ -52,13 +52,13 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
         return new BigDateTimeOffset(BigDateTime.AddSeconds(Value), Offset);
     }
     public BigDateTimeOffset AddMilliseconds(BigDecimal Value) {
-        return AddSeconds(Value / 1000);
+        return new BigDateTimeOffset(BigDateTime.AddMilliseconds(Value), Offset);
     }
     public BigDateTimeOffset AddMicroseconds(BigDecimal Value) {
-        return AddMilliseconds(Value / 1000);
+        return new BigDateTimeOffset(BigDateTime.AddMicroseconds(Value), Offset);
     }
     public BigDateTimeOffset AddNanoseconds(BigDecimal Value) {
-        return AddMicroseconds(Value / 1000);
+        return new BigDateTimeOffset(BigDateTime.AddNanoseconds(Value), Offset);
     }
     public BigDateTimeOffset Add(BigDateTimeOffset Value) {
         return AddSeconds(Value.TotalSeconds);

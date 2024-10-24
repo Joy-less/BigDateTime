@@ -1,5 +1,20 @@
 ﻿using BigTime;
 
+Console.WriteLine(BlackMagic.GetDaysBeforeYear(2));
+
+Console.WriteLine(new BigDateTime(2023, 10, 24));
+Console.WriteLine(new BigDateTime(2023, 10, 24).AddYears(1));
+Console.WriteLine(new BigDateTime(2023, 10, 24).AddYears(2));
+Console.WriteLine(new BigDateTime(2023, 10, 24).AddYears(2245903486503946));
+Console.ReadLine();
+
+Console.WriteLine(new BigDateTime(2023, 10, 24));
+Console.WriteLine(new BigDateTime(2023, 10, 24).AddMonths(1));
+Console.WriteLine(new BigDateTime(2023, 10, 24).AddMonths(2));
+Console.WriteLine(new BigDateTime(2023, 10, 24).AddMonths(24));
+Console.WriteLine(new BigDateTime(2024, 2, 29).AddMonths(12));
+Console.ReadLine();
+
 Console.WriteLine(new BigDateTime(-5, 1, 3));
 Console.WriteLine(new BigDateTime(0, 2, 3));
 Console.ReadLine();
