@@ -23,6 +23,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.0.280" />
+    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.1.312" />
   </ItemGroup>
 </Project>
