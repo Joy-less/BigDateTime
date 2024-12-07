@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <VersionPrefix>1.1</VersionPrefix>
-    <TargetFrameworks>net6.0;net7.0;net8.0;netstandard2.1</TargetFrameworks>
-    <LangVersion>12</LangVersion>
+    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;netstandard2.1</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoWarn>IDE0130</NoWarn>
