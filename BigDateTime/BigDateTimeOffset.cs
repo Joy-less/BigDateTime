@@ -13,18 +13,18 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     /// <summary>
     /// The <see cref="BigDateTime"/> component before the offset is applied.
     /// </summary>
-    public readonly BigDateTime DateTime = BigDateTime;
+    public BigDateTime DateTime { get; } = BigDateTime;
     /// <summary>
     /// The offset from the <see cref="DateTime"/> in hours.
     /// </summary>
-    public readonly BigDecimal Offset = Offset;
+    public BigDecimal Offset { get; } = Offset;
 
     /// <summary>
     /// A <see cref="BigDateTime"/> that represents this <see cref="BigDateTimeOffset"/> with its offset applied.
     /// </summary>
-    public readonly BigDateTime Applied = BigDateTime.AddHours(Offset);
+    public BigDateTime Applied { get; } = BigDateTime.AddHours(Offset);
     /// <inheritdoc cref="BigDateTime.TotalSeconds"/>
-    public readonly BigDecimal TotalSeconds = BigDateTime.AddHours(Offset).TotalSeconds;
+    public BigDecimal TotalSeconds { get; } = BigDateTime.AddHours(Offset).TotalSeconds;
 
     /// <summary>
     /// Constructs a <see cref="BigDateTimeOffset"/> from a date, time and offset.

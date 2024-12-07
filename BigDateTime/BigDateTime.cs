@@ -14,7 +14,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// <summary>
     /// The total number of seconds since 0000/00/00 00:00:00.
     /// </summary>
-    public readonly BigDecimal TotalSeconds = TotalSeconds;
+    public BigDecimal TotalSeconds { get; } = TotalSeconds;
 
     /// <summary>
     /// Constructs a <see cref="BigDateTime"/> from a date and time.
