@@ -19,7 +19,6 @@ public class BigDateTests {
     }
     [Fact]
     public void Test3() {
-        Assert.Equal(DateTime.Now.Year, new BigDateTime(2024, 08, 16, 02, 06, 00).Year);
         Assert.Equal(DateTime.Now.Year, BigDateTime.Now().Year);
         Assert.Equal(DateTime.Now.Month, BigDateTime.Now().Month);
         Assert.Equal(DateTime.Now.Day, BigDateTime.Now().Day);
