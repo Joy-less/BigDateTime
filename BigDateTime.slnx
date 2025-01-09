@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="BigDateTime/BigDateTime.csproj" />
+  <Project Path="BigDateTime.Tests/BigDateTime.Tests.csproj" />
+  <Project Path="BigDateTime.Playground/BigDateTime.Playground.csproj" />
+</Solution>
