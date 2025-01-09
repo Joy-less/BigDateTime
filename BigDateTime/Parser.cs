@@ -5,23 +5,23 @@ using ExtendedNumerics;
 
 namespace BigTime;
 
-internal struct Parser(string FromString) {
-    public string FromString = FromString;
-    public int Index = 0;
+internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
+    public ReadOnlySpan<char> CharSpan { get; set; } = CharSpan;
+    public int Index { get; set; } = 0;
 
     private static readonly char[] Separators = [' ', '/', ':', '-', '　', '／', '：', 'ー'];
 
     public bool EatComponent([NotNullWhen(true)] out string? Component) {
         // Ensure there are more components
-        if (Index >= FromString.Length) {
+        if (Index >= CharSpan.Length) {
             Component = null;
             return false;
         }
 
         // Build component until separator reached
         StringBuilder Builder = new();
-        while (Index < FromString.Length) {
-            char Char = FromString[Index];
+        while (Index < CharSpan.Length) {
+            char Char = CharSpan[Index];
 
             if (Separators.Contains(Char)) {
                 if (Builder.Length == 0) {
