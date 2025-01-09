@@ -9,7 +9,7 @@ internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
     public ReadOnlySpan<char> CharSpan { get; set; } = CharSpan;
     public int Index { get; set; } = 0;
 
-    private static readonly char[] Separators = [' ', '/', ':', '-', '　', '／', '：', 'ー'];
+    private static ReadOnlySpan<char> Separators => [' ', '/', ':', '-', '　', '／', '：', 'ー'];
 
     public bool EatComponent([NotNullWhen(true)] out string? Component) {
         // Ensure there are more components
