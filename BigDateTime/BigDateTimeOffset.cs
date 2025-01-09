@@ -194,7 +194,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     /// Parses a <see cref="BigDateTimeOffset"/> from the string or throws an exception.
     /// </summary>
     /// <remarks>Currently only parses strings in the format "y/M/d H:m:s +H:m:s", where each component is optional and each separator is interchangeable.</remarks>
-    public static BigDateTimeOffset Parse(string String) {
+    public static BigDateTimeOffset Parse(ReadOnlySpan<char> String) {
         Parser Parser = new(String);
 
         Parser.EatBigInteger(out BigInteger Year);
@@ -213,7 +213,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     /// Parses a <see cref="BigDateTimeOffset"/> from the string or returns false.
     /// </summary>
     /// <remarks>Currently only parses strings in the format "y/M/d H:m:s +H:m:s", where each component is optional and each separator is interchangeable.</remarks>
-    public static bool TryParse(string String, out BigDateTimeOffset Result) {
+    public static bool TryParse(ReadOnlySpan<char> String, out BigDateTimeOffset Result) {
         try {
             Result = Parse(String);
             return true;

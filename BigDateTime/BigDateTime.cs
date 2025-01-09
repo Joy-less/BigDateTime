@@ -246,7 +246,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// Parses a <see cref="BigDateTime"/> from the string or throws an exception.
     /// </summary>
     /// <remarks>Currently only parses strings in the format "y/M/d H:m:s", where each component is optional and each separator is interchangeable.</remarks>
-    public static BigDateTime Parse(string String) {
+    public static BigDateTime Parse(ReadOnlySpan<char> String) {
         Parser Parser = new(String);
 
         Parser.EatBigInteger(out BigInteger Year);
@@ -262,7 +262,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// Parses a <see cref="BigDateTime"/> from the string or returns false.
     /// </summary>
     /// <remarks>Currently only parses strings in the format "y/M/d H:m:s", where each component is optional and each separator is interchangeable.</remarks>
-    public static bool TryParse(string String, out BigDateTime Result) {
+    public static bool TryParse(ReadOnlySpan<char> String, out BigDateTime Result) {
         try {
             Result = Parse(String);
             return true;
