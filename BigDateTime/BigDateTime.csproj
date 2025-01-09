@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.1.312" />
+    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.2.358" />
   </ItemGroup>
 
   <!-- NativeAOT Compatibility -->
