@@ -46,7 +46,7 @@ internal static class Formatter {
         ["yyy"] = BDTO => BDTO.Year.ToString("D3"),
         ["yy"] = BDTO => string.Concat(BDTO.Year.ToString().TakeLast(2)).PadLeft(2, '0'),
         ["y"] = BDTO => string.Concat(BDTO.Year.ToString().TakeLast(2)),
-        ["zzz"] = BDTO => (BDTO.Offset.IsNegative() ? "-" : "+") + TimeSpan.FromHours((double)BigDecimal.Abs(BDTO.Offset)).ToString("hh':'mm"),
+        ["zzz"] = BDTO => (BDTO.Offset.IsNegative() ? "-" : "+") + TimeSpan.FromHours(Math.Abs((double)BDTO.Offset)).ToString("hh':'mm"),
         ["zz"] = BDTO => ((BDTO.Offset.IsNegative() ? "-" : "+") + BigDecimal.Abs(BDTO.Offset).WholeValue).PadLeft(2, '0'),
         ["z"] = BDTO => (BDTO.Offset.IsNegative() ? "-" : "+") + BigDecimal.Abs(BDTO.Offset).WholeValue,
     };
