@@ -33,6 +33,71 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
         : this(DateTime.TotalSeconds()) { }
 
     /// <summary>
+    /// Calculates the year.
+    /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
+    public BigInteger Year {
+        get => BlackMagic.GetYear(TotalSeconds.WholeValue);
+    }
+    /// <summary>
+    /// Calculates the month of the year.
+    /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
+    public int Month {
+        get => BlackMagic.GetMonthOfYear(TotalSeconds.WholeValue);
+    }
+    /// <summary>
+    /// Calculates the day of the month.
+    /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
+    public int Day {
+        get => BlackMagic.GetDayOfMonth(TotalSeconds.WholeValue);
+    }
+    /// <summary>
+    /// Calculates the hour.
+    /// </summary>
+    public int Hour {
+        get => (int)(TotalSeconds.WholeValue % SecondsInDay / SecondsInHour);
+    }
+    /// <summary>
+    /// Calculates the minute.
+    /// </summary>
+    public int Minute {
+        get => (int)(TotalSeconds.WholeValue % SecondsInHour / SecondsInMinute);
+    }
+    /// <summary>
+    /// Calculates the second.
+    /// </summary>
+    public BigDecimal Second {
+        get => TotalSeconds % SecondsInMinute;
+    }
+    /// <summary>
+    /// Calculates the day of the year.
+    /// </summary>
+    /// <remarks>This operation uses black magic.</remarks>
+    public int DayOfYear {
+        get => BlackMagic.GetDayOfYear(TotalSeconds.WholeValue);
+    }
+    /// <summary>
+    /// Calculates the day of the week.
+    /// </summary>
+    public DayOfWeek DayOfWeek {
+        get => (DayOfWeek)(((uint)(TotalSeconds.WholeValue / SecondsInDay)) % DaysInWeek);
+    }
+    /// <summary>
+    /// Calculates the daytime segment (AM/PM).
+    /// </summary>
+    public DaytimeSegment DaytimeSegment {
+        get => (DaytimeSegment)(Hour / HoursInDaytimeSegment);
+    }
+    /// <summary>
+    /// Calculates the date time at midnight.
+    /// </summary>
+    public BigDateTime Date {
+        get => new(TotalSeconds - (TotalSeconds % SecondsInDay));
+    }
+
+    /// <summary>
     /// Adds the number of years.
     /// </summary>
     /// <remarks>This operation uses black magic.</remarks>
@@ -193,71 +258,6 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// </summary>
     public int CompareTo(DateTime Other) {
         return TotalSeconds.CompareTo(Other.TotalSeconds());
-    }
-
-    /// <summary>
-    /// Calculates the year.
-    /// </summary>
-    /// <remarks>This operation uses black magic.</remarks>
-    public BigInteger Year {
-        get => BlackMagic.GetYear(TotalSeconds.WholeValue);
-    }
-    /// <summary>
-    /// Calculates the month of the year.
-    /// </summary>
-    /// <remarks>This operation uses black magic.</remarks>
-    public int Month {
-        get => BlackMagic.GetMonthOfYear(TotalSeconds.WholeValue);
-    }
-    /// <summary>
-    /// Calculates the day of the month.
-    /// </summary>
-    /// <remarks>This operation uses black magic.</remarks>
-    public int Day {
-        get => BlackMagic.GetDayOfMonth(TotalSeconds.WholeValue);
-    }
-    /// <summary>
-    /// Calculates the hour.
-    /// </summary>
-    public int Hour {
-        get => (int)(TotalSeconds.WholeValue % SecondsInDay / SecondsInHour);
-    }
-    /// <summary>
-    /// Calculates the minute.
-    /// </summary>
-    public int Minute {
-        get => (int)(TotalSeconds.WholeValue % SecondsInHour / SecondsInMinute);
-    }
-    /// <summary>
-    /// Calculates the second.
-    /// </summary>
-    public BigDecimal Second {
-        get => TotalSeconds % SecondsInMinute;
-    }
-    /// <summary>
-    /// Calculates the day of the year.
-    /// </summary>
-    /// <remarks>This operation uses black magic.</remarks>
-    public int DayOfYear {
-        get => BlackMagic.GetDayOfYear(TotalSeconds.WholeValue);
-    }
-    /// <summary>
-    /// Calculates the day of the week.
-    /// </summary>
-    public DayOfWeek DayOfWeek {
-        get => (DayOfWeek)(((uint)(TotalSeconds.WholeValue / SecondsInDay)) % DaysInWeek);
-    }
-    /// <summary>
-    /// Calculates the daytime segment (AM/PM).
-    /// </summary>
-    public DaytimeSegment DaytimeSegment {
-        get => (DaytimeSegment)(Hour / HoursInDaytimeSegment);
-    }
-    /// <summary>
-    /// Calculates the date time at midnight.
-    /// </summary>
-    public BigDateTime Date {
-        get => new(TotalSeconds - (TotalSeconds % SecondsInDay));
     }
 
     /// <summary>
