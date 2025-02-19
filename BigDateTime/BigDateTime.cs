@@ -233,7 +233,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// Calculates the day of the week.
     /// </summary>
     public DayOfWeek DayOfWeek {
-        get => (DayOfWeek)(int)(TotalSeconds.WholeValue % DaysInWeek / SecondsInDay);
+        get => (DayOfWeek)(((uint)(TotalSeconds.WholeValue / SecondsInDay)) % DaysInWeek);
     }
     /// <summary>
     /// Calculates the daytime segment (AM/PM).
