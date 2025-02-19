@@ -7,7 +7,7 @@ using static GregorianCalendarConstants;
 
 /// <summary>
 /// So you might be thinking: 「 What the hell is going on here? 」<br/>
-/// And you're not alone. I just took this stuff from DateTime and adapted it.<br/>
+/// And you're not alone. I just took this stuff from <see cref="DateTime"/> and adapted it.<br/>
 /// Blame Pope Gregory XIII for introducing the Gregorian calendar.
 /// </summary>
 internal static class BlackMagic {
@@ -97,9 +97,8 @@ internal static class BlackMagic {
     /// </summary>
     public static BigInteger GetDaysBeforeYear(BigInteger Year) {
         // Black magic
-        BigInteger YearFromZero = Year;
-        BigInteger Century = YearFromZero / 100;
-        return YearFromZero * (365 * 4 + 1) / 4 - Century + Century / 4;
+        BigInteger Century = Year / 100;
+        return Year * (365 * 4 + 1) / 4 - Century + Century / 4;
     }
     /// <summary>
     /// Calculates the total seconds with the months added.<br/>
