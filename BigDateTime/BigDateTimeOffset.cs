@@ -198,10 +198,10 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
         Parser Parser = new(String);
 
         Parser.EatBigInteger(out BigInteger Year);
-        Parser.EatInt(out int Month, 1);
-        Parser.EatInt(out int Day, 1);
-        Parser.EatInt(out int Hour);
-        Parser.EatInt(out int Minute);
+        Parser.EatInt32(out int Month, 1);
+        Parser.EatInt32(out int Day, 1);
+        Parser.EatInt32(out int Hour);
+        Parser.EatInt32(out int Minute);
         Parser.EatBigDecimal(out BigDecimal Second);
         Parser.EatBigDecimal(out BigDecimal OffsetHours);
         Parser.EatBigDecimal(out BigDecimal OffsetMinutes);

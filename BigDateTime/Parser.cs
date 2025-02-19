@@ -52,7 +52,7 @@ internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
         BigDecimal = Default;
         return false;
     }
-    public bool EatInt(out int Int, int Default = default) {
+    public bool EatInt32(out int Int, int Default = default) {
         if (EatComponent(out ReadOnlySpan<char> Component)) {
             Int = int.Parse(Component);
             return true;

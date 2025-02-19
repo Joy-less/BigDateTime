@@ -250,10 +250,10 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
         Parser Parser = new(String);
 
         Parser.EatBigInteger(out BigInteger Year);
-        Parser.EatInt(out int Month, 1);
-        Parser.EatInt(out int Day, 1);
-        Parser.EatInt(out int Hour);
-        Parser.EatInt(out int Minute);
+        Parser.EatInt32(out int Month, 1);
+        Parser.EatInt32(out int Day, 1);
+        Parser.EatInt32(out int Hour);
+        Parser.EatInt32(out int Minute);
         Parser.EatBigDecimal(out BigDecimal Second);
 
         return new BigDateTime(Year, Month, Day, Hour, Minute, Second);
@@ -303,8 +303,8 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// Converts the <see cref="BigDateTime"/> to a <see cref="DateTime"/>.
     /// </summary>
     /// <remarks>
-    /// If <see cref="Second"/> is very precise, it loses precision.<br/>
-    /// If <see cref="Year"/> is outside 1 to 9999, an exception is thrown.
+    /// If <see cref="Second"/> is very precise, the precision is reduced.<br/>
+    /// If <see cref="Year"/> is outside 1 to 9999, an <see cref="ArgumentOutOfRangeException"/> is thrown.
     /// </remarks>
     public static explicit operator DateTime(BigDateTime BigDateTime) {
         return new DateTime(TimeSpan.FromSeconds((double)BigDateTime.TotalSeconds - SecondsInCommonYear).Ticks); // Subtract seconds in year 0, because DateTime starts at year 1
