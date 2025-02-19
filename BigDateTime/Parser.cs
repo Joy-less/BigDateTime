@@ -1,45 +1,43 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Buffers;
 using System.Numerics;
-using System.Text;
 using ExtendedNumerics;
 
 namespace BigTime;
 
 internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
-    public ReadOnlySpan<char> CharSpan { get; set; } = CharSpan;
+    public ReadOnlySpan<char> CharSpan { get; } = CharSpan;
     public int Index { get; set; } = 0;
 
-    private static ReadOnlySpan<char> Separators => [' ', '/', ':', '-', '　', '／', '：', 'ー'];
+    private static readonly SearchValues<char> Separators = SearchValues.Create([' ', '/', ':', '-', '　', '／', '：', 'ー']);
 
-    public bool EatComponent([NotNullWhen(true)] out string? Component) {
-        // Ensure there are more components
-        if (Index >= CharSpan.Length) {
-            Component = null;
-            return false;
+    public bool EatComponent(out ReadOnlySpan<char> Component) {
+        // Find separator
+        int SeparatorIndex = CharSpan[Index..].IndexOfAny(Separators);
+        // Offset separator index from index
+        if (SeparatorIndex >= 0) {
+            SeparatorIndex += Index;
         }
 
-        // Build component until separator reached
-        StringBuilder Builder = new();
-        while (Index < CharSpan.Length) {
-            char Char = CharSpan[Index];
-
-            if (Separators.Contains(Char)) {
-                if (Builder.Length == 0) {
-                    throw new Exception($"Expected digit before separator ('{Char}')");
-                }
-                Index++;
-                break;
-            }
-            else {
-                Builder.Append(Char);
-                Index++;
-            }
+        // No separator found
+        if (SeparatorIndex < 0) {
+            // Get last component
+            Component = CharSpan[Index..];
+            // Move past last component
+            Index = CharSpan.Length;
         }
-        Component = Builder.ToString();
-        return true;
+        // Separator found
+        else {
+            // Get component before separator
+            Component = CharSpan[Index..SeparatorIndex];
+            // Move past component
+            Index = SeparatorIndex + 1;
+        }
+
+        // Return whether component was consumed
+        return !Component.IsEmpty;
     }
     public bool EatBigInteger(out BigInteger BigInteger, BigInteger Default = default) {
-        if (EatComponent(out string? Component)) {
+        if (EatComponent(out ReadOnlySpan<char> Component)) {
             BigInteger = BigInteger.Parse(Component);
             return true;
         }
@@ -47,15 +45,15 @@ internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
         return false;
     }
     public bool EatBigDecimal(out BigDecimal BigDecimal, BigDecimal Default = default) {
-        if (EatComponent(out string? Component)) {
-            BigDecimal = BigDecimal.Parse(Component);
+        if (EatComponent(out ReadOnlySpan<char> Component)) {
+            BigDecimal = BigDecimal.Parse(Component.ToString()); // TODO: Use ReadOnlySpan<char> overload rather than calling ToString() if/when it is added.
             return true;
         }
         BigDecimal = Default;
         return false;
     }
     public bool EatInt(out int Int, int Default = default) {
-        if (EatComponent(out string? Component)) {
+        if (EatComponent(out ReadOnlySpan<char> Component)) {
             Int = int.Parse(Component);
             return true;
         }

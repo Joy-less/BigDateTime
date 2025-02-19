@@ -43,4 +43,8 @@ public class BigDateTests {
     public void Test6() {
         Assert.Equal(DateTimeOffset.UtcNow.ToString("yyyy-MM-dd hh-mm-ss zzz"), BigDateTimeOffset.Now(0).ToString("yyyy-MM-dd hh-mm-ss zzz"));
     }
+    [Fact]
+    public void Test7() {
+        Assert.Equal(BigDateTimeOffset.Parse("2025/01/09"), DateTimeOffset.Parse("2025-01-09"));
+    }
 }
