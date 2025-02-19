@@ -5,9 +5,10 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- IDE0130: Namespace does not match folder structure -->
     <NoWarn>IDE0130</NoWarn>
   </PropertyGroup>
-
   <PropertyGroup>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,18 +20,15 @@
     <RepositoryUrl>https://github.com/Joy-less/BigDateTime</RepositoryUrl>
     <PackageTags>DateTime</PackageTags>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.2.358" />
+    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.3.40" />
   </ItemGroup>
-
   <!-- NativeAOT Compatibility -->
   <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">
     <IsAotCompatible>true</IsAotCompatible>
