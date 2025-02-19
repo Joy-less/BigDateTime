@@ -103,7 +103,7 @@ internal static class BlackMagic {
     /// <summary>
     /// Calculates the total seconds with the months added.<br/>
     /// <br/>
-    /// Taken from <see cref="DateTime"/> (in .NET Framework 4.8 because the .NET 8 version wouldn't work):
+    /// Taken from <see cref="DateTime"/> (in .NET Framework 4.8 because the .NET 8 version is hardcoded to use ticks):
     /// <see href="https://referencesource.microsoft.com/#mscorlib/system/datetime.cs,02ff6ea643eb71e8,references">Source Reference</see>
     /// </summary>
     public static BigDecimal AddMonths(BigDecimal TotalSeconds, BigInteger Months) {
