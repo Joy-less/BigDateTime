@@ -247,6 +247,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     public static BigDateTimeOffset Now() {
         return Now(DateTimeOffset.Now.Offset.TotalHours);
     }
+
     /// <inheritdoc cref="Add(BigDateTimeOffset)"/>
     public static BigDateTimeOffset operator +(BigDateTimeOffset This, BigDateTimeOffset Other) {
         return This.Add(Other);
