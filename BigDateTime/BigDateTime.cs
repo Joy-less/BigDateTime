@@ -95,10 +95,22 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
         return AddSeconds(Value.TotalSeconds);
     }
     /// <summary>
+    /// Adds the total seconds of <paramref name="Value"/>.
+    /// </summary>
+    public BigDateTime Add(TimeSpan Value) {
+        return AddSeconds(Value.TotalSeconds);
+    }
+    /// <summary>
     /// Returns the number of seconds between this and <paramref name="Value"/>.
     /// </summary>
     public BigDecimal Subtract(BigDateTime Value) {
         return TotalSeconds - Value.TotalSeconds;
+    }
+    /// <summary>
+    /// Returns a date time that subtracts the total seconds of <paramref name="Value"/>.
+    /// </summary>
+    public BigDateTime Subtract(TimeSpan Value) {
+        return AddSeconds(-Value.Seconds);
     }
     /// <summary>
     /// Returns the full name of the month according to the given or invariant culture.<br/>
@@ -141,7 +153,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
         return DaytimeSegment switch {
             DaytimeSegment.AM => Culture.DateTimeFormat.AMDesignator,
             DaytimeSegment.PM => Culture.DateTimeFormat.PMDesignator,
-            _ => throw new Exception($"Invalid daytime segment ('{DaytimeSegment}')")
+            _ => throw new ArgumentException($"Invalid daytime segment ('{DaytimeSegment}')")
         };
     }
     /// <summary>
@@ -240,6 +252,12 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// </summary>
     public DaytimeSegment DaytimeSegment {
         get => (DaytimeSegment)(Hour / HoursInDaytimeSegment);
+    }
+    /// <summary>
+    /// Calculates the date time at midnight.
+    /// </summary>
+    public BigDateTime Date {
+        get => new(TotalSeconds - (TotalSeconds % SecondsInDay));
     }
 
     /// <summary>

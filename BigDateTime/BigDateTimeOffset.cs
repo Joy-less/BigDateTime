@@ -83,6 +83,10 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     public DaytimeSegment DaytimeSegment {
         get => Applied.DaytimeSegment;
     }
+    /// <inheritdoc cref="BigDateTime.Date"/>
+    public BigDateTime Date {
+        get => Applied.Date;
+    }
 
     /// <inheritdoc cref="BigDateTime.AddYears(BigInteger)"/>
     public BigDateTimeOffset AddYears(BigInteger Value) {
@@ -124,9 +128,17 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     public BigDateTimeOffset Add(BigDateTimeOffset Value) {
         return AddSeconds(Value.TotalSeconds);
     }
+    /// <inheritdoc cref="BigDateTime.Add(TimeSpan)"/>
+    public BigDateTimeOffset Add(TimeSpan Value) {
+        return AddSeconds(Value.TotalSeconds);
+    }
     /// <inheritdoc cref="BigDateTime.Subtract(BigDateTime)"/>
     public BigDecimal Subtract(BigDateTimeOffset Value) {
         return TotalSeconds - Value.TotalSeconds;
+    }
+    /// <inheritdoc cref="BigDateTime.Subtract(TimeSpan)"/>
+    public BigDateTimeOffset Subtract(TimeSpan Value) {
+        return AddSeconds(-Value.Seconds);
     }
     /// <summary>
     /// Returns a new <see cref="BigDateTimeOffset"/> where the offset is changed to the given number of hours.<br/>
