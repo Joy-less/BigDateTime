@@ -9,7 +9,7 @@ The first of its kind to my knowledge.
 ## Features
 
 - Supports arbitrary-size dates (DateTime only supports years 1 to 9999)
-- Supports abitrary-precision times (DateTime is only precise to 100 nanoseconds / 0.0000001 seconds)
+- Supports arbitrary-precision times (DateTime is only precise to 100 nanoseconds / 0.0000001 seconds)
 - Highly performant (takes algorithms from DateTime)
 
 ## Examples
