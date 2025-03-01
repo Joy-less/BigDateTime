@@ -1,8 +1,8 @@
 # BigDateTime
 
 [![NuGet](https://img.shields.io/nuget/v/BigDateTime.svg)](https://www.nuget.org/packages/BigDateTime)
- 
-A more flexible alternative to DateTime in C# that can represent any date and time, even 60242/1/5 23:59:22.
+
+An arbitrary size and precision date and time stored using a BigReal, that can represent any moment, even `60242/1/5 23:59:22`.
 
 The first of its kind to my knowledge.
 
