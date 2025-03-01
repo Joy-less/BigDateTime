@@ -9,16 +9,16 @@ using static Extensions;
 /// <summary>
 /// An arbitrary size and precision DateTime in the Gregorian calendar.
 /// </summary>
-public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDateTime>, IComparable<DateTime> {
+public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable<BigDateTime>, IComparable<DateTime> {
     /// <summary>
     /// The total number of seconds since 0000/00/00 00:00:00.
     /// </summary>
-    public BigDecimal TotalSeconds { get; } = TotalSeconds;
+    public BigReal TotalSeconds { get; } = TotalSeconds;
 
     /// <summary>
     /// Constructs a <see cref="BigDateTime"/> from a date and time.
     /// </summary>
-    public BigDateTime(BigInteger Year, int Month, int Day, int Hour, int Minute, BigDecimal Second)
+    public BigDateTime(BigInteger Year, int Month, int Day, int Hour, int Minute, BigReal Second)
         : this(TotalSecondsAt(Year, Month, Day, Hour, Minute, Second)) { }
     /// <summary>
     /// Constructs a <see cref="BigDateTime"/> from a date.
@@ -36,38 +36,38 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// </summary>
     /// <remarks>This operation uses black magic.</remarks>
     public BigInteger Year {
-        get => BlackMagic.GetYear(TotalSeconds.WholeValue);
+        get => BlackMagic.GetYear(BigReal.GetWholePart(TotalSeconds));
     }
     /// <summary>
     /// Calculates the month of the year.
     /// </summary>
     /// <remarks>This operation uses black magic.</remarks>
     public int Month {
-        get => BlackMagic.GetMonthOfYear(TotalSeconds.WholeValue);
+        get => BlackMagic.GetMonthOfYear(BigReal.GetWholePart(TotalSeconds));
     }
     /// <summary>
     /// Calculates the day of the month.
     /// </summary>
     /// <remarks>This operation uses black magic.</remarks>
     public int Day {
-        get => BlackMagic.GetDayOfMonth(TotalSeconds.WholeValue);
+        get => BlackMagic.GetDayOfMonth(BigReal.GetWholePart(TotalSeconds));
     }
     /// <summary>
     /// Calculates the hour.
     /// </summary>
     public int Hour {
-        get => (int)(TotalSeconds.WholeValue % SecondsInDay / SecondsInHour);
+        get => (int)(BigReal.GetWholePart(TotalSeconds) % SecondsInDay / SecondsInHour);
     }
     /// <summary>
     /// Calculates the minute.
     /// </summary>
     public int Minute {
-        get => (int)(TotalSeconds.WholeValue % SecondsInHour / SecondsInMinute);
+        get => (int)(BigReal.GetWholePart(TotalSeconds) % SecondsInHour / SecondsInMinute);
     }
     /// <summary>
     /// Calculates the second.
     /// </summary>
-    public BigDecimal Second {
+    public BigReal Second {
         get => TotalSeconds % SecondsInMinute;
     }
     /// <summary>
@@ -75,13 +75,13 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// </summary>
     /// <remarks>This operation uses black magic.</remarks>
     public int DayOfYear {
-        get => BlackMagic.GetDayOfYear(TotalSeconds.WholeValue);
+        get => BlackMagic.GetDayOfYear(BigReal.GetWholePart(TotalSeconds));
     }
     /// <summary>
     /// Calculates the day of the week.
     /// </summary>
     public DayOfWeek DayOfWeek {
-        get => (DayOfWeek)(((uint)(TotalSeconds.WholeValue / SecondsInDay)) % DaysInWeek);
+        get => (DayOfWeek)(((uint)(BigReal.GetWholePart(TotalSeconds) / SecondsInDay)) % DaysInWeek);
     }
     /// <summary>
     /// Calculates the daytime segment (AM/PM).
@@ -113,43 +113,43 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// <summary>
     /// Adds the number of days.
     /// </summary>
-    public BigDateTime AddDays(BigDecimal Value) {
+    public BigDateTime AddDays(BigReal Value) {
         return new BigDateTime(TotalSeconds + (Value * SecondsInDay));
     }
     /// <summary>
     /// Adds the number of hours.
     /// </summary>
-    public BigDateTime AddHours(BigDecimal Value) {
+    public BigDateTime AddHours(BigReal Value) {
         return new BigDateTime(TotalSeconds + (Value * SecondsInHour));
     }
     /// <summary>
     /// Adds the number of minutes.
     /// </summary>
-    public BigDateTime AddMinutes(BigDecimal Value) {
+    public BigDateTime AddMinutes(BigReal Value) {
         return new BigDateTime(TotalSeconds + (Value * SecondsInMinute));
     }
     /// <summary>
     /// Adds the number of seconds.
     /// </summary>
-    public BigDateTime AddSeconds(BigDecimal Value) {
+    public BigDateTime AddSeconds(BigReal Value) {
         return new BigDateTime(TotalSeconds + Value);
     }
     /// <summary>
     /// Adds the number of milliseconds.
     /// </summary>
-    public BigDateTime AddMilliseconds(BigDecimal Value) {
+    public BigDateTime AddMilliseconds(BigReal Value) {
         return AddSeconds(Value / 1000);
     }
     /// <summary>
     /// Adds the number of microseconds.
     /// </summary>
-    public BigDateTime AddMicroseconds(BigDecimal Value) {
+    public BigDateTime AddMicroseconds(BigReal Value) {
         return AddMilliseconds(Value / 1000);
     }
     /// <summary>
     /// Adds the number of nanoseconds.
     /// </summary>
-    public BigDateTime AddNanoseconds(BigDecimal Value) {
+    public BigDateTime AddNanoseconds(BigReal Value) {
         return AddMicroseconds(Value / 1000);
     }
     /// <summary>
@@ -167,7 +167,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// <summary>
     /// Returns the number of seconds between this and <paramref name="Value"/>.
     /// </summary>
-    public BigDecimal Subtract(BigDateTime Value) {
+    public BigReal Subtract(BigDateTime Value) {
         return TotalSeconds - Value.TotalSeconds;
     }
     /// <summary>
@@ -271,7 +271,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
         Parser.EatInt32(out int Day, 1);
         Parser.EatInt32(out int Hour);
         Parser.EatInt32(out int Minute);
-        Parser.EatBigDecimal(out BigDecimal Second);
+        Parser.EatBigReal(out BigReal Second);
 
         return new BigDateTime(Year, Month, Day, Hour, Minute, Second);
     }
@@ -292,7 +292,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
     /// <summary>
     /// Returns a <see cref="BigDateTime"/> representing the current time at the given UTC offset.
     /// </summary>
-    public static BigDateTime Now(BigDecimal Offset) {
+    public static BigDateTime Now(BigReal Offset) {
         return new BigDateTime(DateTime.UtcNow).AddHours(Offset);
     }
     /// <summary>
@@ -307,7 +307,7 @@ public readonly struct BigDateTime(BigDecimal TotalSeconds) : IComparable<BigDat
         return This.Add(Other);
     }
     /// <inheritdoc cref="Subtract(BigDateTime)"/>
-    public static BigDecimal operator -(BigDateTime This, BigDateTime Other) {
+    public static BigReal operator -(BigDateTime This, BigDateTime Other) {
         return This.Subtract(Other);
     }
     /// <summary>

@@ -105,8 +105,8 @@ internal static class BlackMagic {
     /// Taken from <see cref="DateTime"/> (in .NET Framework 4.8 because the .NET 8 version is hardcoded to use ticks):
     /// <see href="https://referencesource.microsoft.com/#mscorlib/system/datetime.cs,02ff6ea643eb71e8,references">Source Reference</see>
     /// </summary>
-    public static BigDecimal AddMonths(BigDecimal TotalSeconds, BigInteger Months) {
-        GetDate(TotalSeconds.WholeValue, out BigInteger Year, out int Month, out int Day);
+    public static BigReal AddMonths(BigReal TotalSeconds, BigInteger Months) {
+        GetDate(BigReal.GetWholePart(TotalSeconds), out BigInteger Year, out int Month, out int Day);
 
         // Black magic
         BigInteger I = Month - 1 + Months;

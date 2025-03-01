@@ -24,7 +24,7 @@ public class BigDateTests {
         Assert.Equal(DateTime.Now.Day, BigDateTime.Now().Day);
         Assert.Equal(DateTime.Now.Hour, BigDateTime.Now().Hour);
         Assert.Equal(DateTime.Now.Minute, BigDateTime.Now().Minute);
-        Assert.Equal(DateTime.Now.Second, BigDateTime.Now().Second.GetWholePart());
+        Assert.Equal(DateTime.Now.Second, BigReal.GetWholePart(BigDateTime.Now().Second));
     }
     [Fact]
     public void Test4() {
@@ -33,7 +33,7 @@ public class BigDateTests {
         Assert.Equal(DateTimeOffset.Now.Day, BigDateTimeOffset.Now().Day);
         Assert.Equal(DateTimeOffset.Now.Hour, BigDateTimeOffset.Now().Hour);
         Assert.Equal(DateTimeOffset.Now.Minute, BigDateTimeOffset.Now().Minute);
-        Assert.Equal(DateTimeOffset.Now.Second, BigDateTimeOffset.Now().Second.GetWholePart());
+        Assert.Equal(DateTimeOffset.Now.Second, BigReal.GetWholePart(BigDateTimeOffset.Now().Second));
     }
     [Fact]
     public void Test5() {

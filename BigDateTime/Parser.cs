@@ -43,12 +43,12 @@ internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
         BigInteger = Default;
         return false;
     }
-    public bool EatBigDecimal(out BigDecimal BigDecimal, BigDecimal Default = default) {
+    public bool EatBigReal(out BigReal BigReal, BigReal Default = default) {
         if (EatComponent(out ReadOnlySpan<char> Component)) {
-            BigDecimal = BigDecimal.Parse(Component.ToString()); // TODO: Use ReadOnlySpan<char> overload rather than calling ToString() if/when it is added.
+            BigReal = BigReal.Parse(Component.ToString()); // TODO: Use ReadOnlySpan<char> overload rather than calling ToString() if/when it is added.
             return true;
         }
-        BigDecimal = Default;
+        BigReal = Default;
         return false;
     }
     public bool EatInt32(out int Int, int Default = default) {

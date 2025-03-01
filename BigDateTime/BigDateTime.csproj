@@ -5,32 +5,38 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <!-- IDE0130: Namespace does not match folder structure -->
     <NoWarn>IDE0130</NoWarn>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
+  
   <PropertyGroup>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Title>BigDateTime</Title>
-    <Description>A DateTime/DateTimeOffset alternative using BigIntegers and BigDecimals.</Description>
-    <PackageProjectUrl>https://github.com/Joy-less/BigDateTime</PackageProjectUrl>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageId>BigDateTime</PackageId>
+    <Description>An arbitrary size and precision date and time stored using a BigReal.</Description>
+    <Authors>Joyless</Authors>
     <RepositoryUrl>https://github.com/Joy-less/BigDateTime</RepositoryUrl>
-    <PackageTags>DateTime</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>date; arbitrary; datetime</PackageTags>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Copyright>Joyless</Copyright>
+    <PackageProjectUrl>https://github.com/Joy-less/BigDateTime</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+  
   <ItemGroup>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+  
   <ItemGroup>
-    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.3.40" />
+    <PackageReference Include="BigReal" Version="1.3.0" />
   </ItemGroup>
+  
   <!-- NativeAOT Compatibility -->
   <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">
-    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 </Project>

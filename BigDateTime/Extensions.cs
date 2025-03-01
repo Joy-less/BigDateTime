@@ -8,18 +8,18 @@ internal static class Extensions {
     /// <summary>
     /// Returns the total number of seconds since 0000/00/00 00:00:00.
     /// </summary>
-    public static BigDecimal TotalSeconds(this DateTime DateTime) {
+    public static BigReal TotalSeconds(this DateTime DateTime) {
         return DateTime.Subtract(DateTime.MinValue).TotalSeconds
             + SecondsInCommonYear; // Add seconds in year 0, because DateTime starts at year 1
     }
     /// <inheritdoc cref="TotalSeconds(DateTime)"/>
-    public static BigDecimal TotalSeconds(this DateTimeOffset DateTimeOffset) {
+    public static BigReal TotalSeconds(this DateTimeOffset DateTimeOffset) {
         return DateTimeOffset.UtcDateTime.TotalSeconds();
     }
     /// <summary>
     /// Returns the date and time's total number of seconds since 0000/00/00 00:00:00.
     /// </summary>
-    public static BigDecimal TotalSecondsAt(BigInteger Year, int Month, int Day, int Hour, int Minute, BigDecimal Second) {
+    public static BigReal TotalSecondsAt(BigInteger Year, int Month, int Day, int Hour, int Minute, BigReal Second) {
         AssertInRange(Month, Day, Hour, Minute, Second);
         return Second
             + Minute * SecondsInMinute
@@ -31,7 +31,7 @@ internal static class Extensions {
     /// <summary>
     /// Throws an exception if any component is outside the valid range.
     /// </summary>
-    public static void AssertInRange(int? Month, int? Day, int? Hour, int? Minute, BigDecimal? Second) {
+    public static void AssertInRange(int? Month, int? Day, int? Hour, int? Minute, BigReal? Second) {
         if (Month is not null && (Month is < 1 or > 12)) {
             throw new ArgumentOutOfRangeException(nameof(Month), "Month must be 1 to 12");
         }

@@ -8,7 +8,7 @@ using static GregorianCalendarConstants;
 /// <summary>
 /// An arbitrary size and precision DateTimeOffset in the Gregorian calendar.
 /// </summary>
-public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Offset = default) : IComparable<BigDateTimeOffset>, IComparable<DateTimeOffset> {
+public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal Offset = default) : IComparable<BigDateTimeOffset>, IComparable<DateTimeOffset> {
     /// <summary>
     /// The <see cref="BigDateTime"/> component before the offset is applied.
     /// </summary>
@@ -16,29 +16,29 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     /// <summary>
     /// The offset from the <see cref="DateTime"/> in hours.
     /// </summary>
-    public BigDecimal Offset { get; } = Offset;
+    public BigReal Offset { get; } = Offset;
 
     /// <summary>
     /// A <see cref="BigDateTime"/> that represents this <see cref="BigDateTimeOffset"/> with its offset applied.
     /// </summary>
     public BigDateTime Applied { get; } = BigDateTime.AddHours(Offset);
     /// <inheritdoc cref="BigDateTime.TotalSeconds"/>
-    public BigDecimal TotalSeconds { get; } = BigDateTime.AddHours(Offset).TotalSeconds;
+    public BigReal TotalSeconds { get; } = BigDateTime.AddHours(Offset).TotalSeconds;
 
     /// <summary>
     /// Constructs a <see cref="BigDateTimeOffset"/> from a date, time and offset.
     /// </summary>
-    public BigDateTimeOffset(BigInteger Year, int Month, int Day, int Hour, int Minute, BigDecimal Second, BigDecimal Offset = default)
+    public BigDateTimeOffset(BigInteger Year, int Month, int Day, int Hour, int Minute, BigReal Second, BigReal Offset = default)
         : this(new BigDateTime(Year, Month, Day, Hour, Minute, Second), Offset) { }
     /// <summary>
     /// Constructs a <see cref="BigDateTimeOffset"/> from a date and offset.
     /// </summary>
-    public BigDateTimeOffset(BigInteger Year, int Month, int Day, BigDecimal Offset = default)
+    public BigDateTimeOffset(BigInteger Year, int Month, int Day, BigReal Offset = default)
         : this(new BigDateTime(Year, Month, Day), Offset) { }
     /// <summary>
     /// Constructs a <see cref="BigDateTimeOffset"/> from a total number of seconds since 0000/00/00 00:00:00 and offset.
     /// </summary>
-    public BigDateTimeOffset(BigDecimal TotalSeconds, BigDecimal Offset = default)
+    public BigDateTimeOffset(BigReal TotalSeconds, BigReal Offset = default)
         : this(new BigDateTime(TotalSeconds), Offset) { }
     /// <summary>
     /// Constructs a <see cref="BigDateTimeOffset"/> from a less-flexible <see cref="DateTimeOffset"/>.
@@ -67,7 +67,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
         get => Applied.Minute;
     }
     /// <inheritdoc cref="BigDateTime.Second"/>
-    public BigDecimal Second {
+    public BigReal Second {
         get => Applied.Second;
     }
     /// <inheritdoc cref="BigDateTime.DayOfYear"/>
@@ -95,32 +95,32 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     public BigDateTimeOffset AddMonths(BigInteger Value) {
         return new BigDateTimeOffset(DateTime.AddMonths(Value), Offset);
     }
-    /// <inheritdoc cref="BigDateTime.AddDays(BigDecimal)"/>
-    public BigDateTimeOffset AddDays(BigDecimal Value) {
+    /// <inheritdoc cref="BigDateTime.AddDays(BigReal)"/>
+    public BigDateTimeOffset AddDays(BigReal Value) {
         return new BigDateTimeOffset(DateTime.AddDays(Value), Offset);
     }
-    /// <inheritdoc cref="BigDateTime.AddHours(BigDecimal)"/>
-    public BigDateTimeOffset AddHours(BigDecimal Value) {
+    /// <inheritdoc cref="BigDateTime.AddHours(BigReal)"/>
+    public BigDateTimeOffset AddHours(BigReal Value) {
         return new BigDateTimeOffset(DateTime.AddHours(Value), Offset);
     }
-    /// <inheritdoc cref="BigDateTime.AddMinutes(BigDecimal)"/>
-    public BigDateTimeOffset AddMinutes(BigDecimal Value) {
+    /// <inheritdoc cref="BigDateTime.AddMinutes(BigReal)"/>
+    public BigDateTimeOffset AddMinutes(BigReal Value) {
         return new BigDateTimeOffset(DateTime.AddMinutes(Value), Offset);
     }
-    /// <inheritdoc cref="BigDateTime.AddSeconds(BigDecimal)"/>
-    public BigDateTimeOffset AddSeconds(BigDecimal Value) {
+    /// <inheritdoc cref="BigDateTime.AddSeconds(BigReal)"/>
+    public BigDateTimeOffset AddSeconds(BigReal Value) {
         return new BigDateTimeOffset(DateTime.AddSeconds(Value), Offset);
     }
-    /// <inheritdoc cref="BigDateTime.AddMilliseconds(BigDecimal)"/>
-    public BigDateTimeOffset AddMilliseconds(BigDecimal Value) {
+    /// <inheritdoc cref="BigDateTime.AddMilliseconds(BigReal)"/>
+    public BigDateTimeOffset AddMilliseconds(BigReal Value) {
         return new BigDateTimeOffset(DateTime.AddMilliseconds(Value), Offset);
     }
-    /// <inheritdoc cref="BigDateTime.AddMicroseconds(BigDecimal)"/>
-    public BigDateTimeOffset AddMicroseconds(BigDecimal Value) {
+    /// <inheritdoc cref="BigDateTime.AddMicroseconds(BigReal)"/>
+    public BigDateTimeOffset AddMicroseconds(BigReal Value) {
         return new BigDateTimeOffset(DateTime.AddMicroseconds(Value), Offset);
     }
-    /// <inheritdoc cref="BigDateTime.AddNanoseconds(BigDecimal)"/>
-    public BigDateTimeOffset AddNanoseconds(BigDecimal Value) {
+    /// <inheritdoc cref="BigDateTime.AddNanoseconds(BigReal)"/>
+    public BigDateTimeOffset AddNanoseconds(BigReal Value) {
         return new BigDateTimeOffset(DateTime.AddNanoseconds(Value), Offset);
     }
     /// <inheritdoc cref="BigDateTime.Add(BigDateTime)"/>
@@ -132,7 +132,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
         return AddSeconds(Value.TotalSeconds);
     }
     /// <inheritdoc cref="BigDateTime.Subtract(BigDateTime)"/>
-    public BigDecimal Subtract(BigDateTimeOffset Value) {
+    public BigReal Subtract(BigDateTimeOffset Value) {
         return TotalSeconds - Value.TotalSeconds;
     }
     /// <inheritdoc cref="BigDateTime.Subtract(TimeSpan)"/>
@@ -143,7 +143,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     /// Returns a new <see cref="BigDateTimeOffset"/> where the offset is changed to the given number of hours.<br/>
     /// The new <see cref="BigDateTimeOffset"/> will represent a different time.
     /// </summary>
-    public BigDateTimeOffset ChangeOffset(BigDecimal Offset) {
+    public BigDateTimeOffset ChangeOffset(BigReal Offset) {
         return new BigDateTimeOffset(DateTime, Offset);
     }
     /// <inheritdoc cref="BigDateTime.MonthName(CultureInfo?)"/>
@@ -213,10 +213,10 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
         Parser.EatInt32(out int Day, 1);
         Parser.EatInt32(out int Hour);
         Parser.EatInt32(out int Minute);
-        Parser.EatBigDecimal(out BigDecimal Second);
-        Parser.EatBigDecimal(out BigDecimal OffsetHours);
-        Parser.EatBigDecimal(out BigDecimal OffsetMinutes);
-        Parser.EatBigDecimal(out BigDecimal OffsetSeconds);
+        Parser.EatBigReal(out BigReal Second);
+        Parser.EatBigReal(out BigReal OffsetHours);
+        Parser.EatBigReal(out BigReal OffsetMinutes);
+        Parser.EatBigReal(out BigReal OffsetSeconds);
 
         return new BigDateTimeOffset(Year, Month, Day, Hour, Minute, Second, (OffsetHours * SecondsInHour) + (OffsetMinutes * SecondsInMinute) + OffsetSeconds);
     }
@@ -237,7 +237,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
     /// <summary>
     /// Returns a <see cref="BigDateTimeOffset"/> representing the current time at the given UTC offset.
     /// </summary>
-    public static BigDateTimeOffset Now(BigDecimal Offset) {
+    public static BigDateTimeOffset Now(BigReal Offset) {
         return new BigDateTimeOffset(System.DateTime.UtcNow, Offset);
     }
     /// <summary>
@@ -252,7 +252,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigDecimal Off
         return This.Add(Other);
     }
     /// <inheritdoc cref="Subtract(BigDateTimeOffset)"/>
-    public static BigDecimal operator -(BigDateTimeOffset This, BigDateTimeOffset Other) {
+    public static BigReal operator -(BigDateTimeOffset This, BigDateTimeOffset Other) {
         return This.Subtract(Other);
     }
     /// <summary>
