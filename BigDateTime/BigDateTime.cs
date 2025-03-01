@@ -266,12 +266,12 @@ public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable<BigDateTi
     public static BigDateTime Parse(ReadOnlySpan<char> String) {
         Parser Parser = new(String);
 
-        Parser.EatBigInteger(out BigInteger Year);
+        Parser.EatBigInteger(out BigInteger Year, 0);
         Parser.EatInt32(out int Month, 1);
         Parser.EatInt32(out int Day, 1);
-        Parser.EatInt32(out int Hour);
-        Parser.EatInt32(out int Minute);
-        Parser.EatBigReal(out BigReal Second);
+        Parser.EatInt32(out int Hour, 0);
+        Parser.EatInt32(out int Minute, 0);
+        Parser.EatBigReal(out BigReal Second, 0);
 
         return new BigDateTime(Year, Month, Day, Hour, Minute, Second);
     }

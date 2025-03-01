@@ -35,7 +35,7 @@ internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
         // Return whether component was consumed
         return !Component.IsEmpty;
     }
-    public bool EatBigInteger(out BigInteger BigInteger, BigInteger Default = default) {
+    public bool EatBigInteger(out BigInteger BigInteger, BigInteger Default) {
         if (EatComponent(out ReadOnlySpan<char> Component)) {
             BigInteger = BigInteger.Parse(Component);
             return true;
@@ -43,7 +43,7 @@ internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
         BigInteger = Default;
         return false;
     }
-    public bool EatBigReal(out BigReal BigReal, BigReal Default = default) {
+    public bool EatBigReal(out BigReal BigReal, BigReal Default) {
         if (EatComponent(out ReadOnlySpan<char> Component)) {
             BigReal = BigReal.Parse(Component.ToString()); // TODO: Use ReadOnlySpan<char> overload rather than calling ToString() if/when it is added.
             return true;
@@ -51,7 +51,7 @@ internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
         BigReal = Default;
         return false;
     }
-    public bool EatInt32(out int Int, int Default = default) {
+    public bool EatInt32(out int Int, int Default) {
         if (EatComponent(out ReadOnlySpan<char> Component)) {
             Int = int.Parse(Component);
             return true;

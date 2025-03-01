@@ -8,7 +8,7 @@ using static GregorianCalendarConstants;
 /// <summary>
 /// An arbitrary size and precision DateTimeOffset in the Gregorian calendar.
 /// </summary>
-public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal Offset = default) : IComparable<BigDateTimeOffset>, IComparable<DateTimeOffset> {
+public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal? Offset = null) : IComparable<BigDateTimeOffset>, IComparable<DateTimeOffset> {
     /// <summary>
     /// The <see cref="BigDateTime"/> component before the offset is applied.
     /// </summary>
@@ -16,29 +16,29 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal Offset
     /// <summary>
     /// The offset from the <see cref="DateTime"/> in hours.
     /// </summary>
-    public BigReal Offset { get; } = Offset;
+    public BigReal Offset { get; } = Offset ?? BigReal.Zero;
 
     /// <summary>
     /// A <see cref="BigDateTime"/> that represents this <see cref="BigDateTimeOffset"/> with its offset applied.
     /// </summary>
-    public BigDateTime Applied { get; } = BigDateTime.AddHours(Offset);
+    public BigDateTime Applied { get; } = BigDateTime.AddHours(Offset ?? BigReal.Zero);
     /// <inheritdoc cref="BigDateTime.TotalSeconds"/>
-    public BigReal TotalSeconds { get; } = BigDateTime.AddHours(Offset).TotalSeconds;
+    public BigReal TotalSeconds { get; } = BigDateTime.AddHours(Offset ?? BigReal.Zero).TotalSeconds;
 
     /// <summary>
     /// Constructs a <see cref="BigDateTimeOffset"/> from a date, time and offset.
     /// </summary>
-    public BigDateTimeOffset(BigInteger Year, int Month, int Day, int Hour, int Minute, BigReal Second, BigReal Offset = default)
+    public BigDateTimeOffset(BigInteger Year, int Month, int Day, int Hour, int Minute, BigReal Second, BigReal? Offset = null)
         : this(new BigDateTime(Year, Month, Day, Hour, Minute, Second), Offset) { }
     /// <summary>
     /// Constructs a <see cref="BigDateTimeOffset"/> from a date and offset.
     /// </summary>
-    public BigDateTimeOffset(BigInteger Year, int Month, int Day, BigReal Offset = default)
+    public BigDateTimeOffset(BigInteger Year, int Month, int Day, BigReal? Offset = null)
         : this(new BigDateTime(Year, Month, Day), Offset) { }
     /// <summary>
     /// Constructs a <see cref="BigDateTimeOffset"/> from a total number of seconds since 0000/00/00 00:00:00 and offset.
     /// </summary>
-    public BigDateTimeOffset(BigReal TotalSeconds, BigReal Offset = default)
+    public BigDateTimeOffset(BigReal TotalSeconds, BigReal? Offset = null)
         : this(new BigDateTime(TotalSeconds), Offset) { }
     /// <summary>
     /// Constructs a <see cref="BigDateTimeOffset"/> from a less-flexible <see cref="DateTimeOffset"/>.
@@ -208,15 +208,15 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal Offset
     public static BigDateTimeOffset Parse(ReadOnlySpan<char> String) {
         Parser Parser = new(String);
 
-        Parser.EatBigInteger(out BigInteger Year);
+        Parser.EatBigInteger(out BigInteger Year, 0);
         Parser.EatInt32(out int Month, 1);
         Parser.EatInt32(out int Day, 1);
-        Parser.EatInt32(out int Hour);
-        Parser.EatInt32(out int Minute);
-        Parser.EatBigReal(out BigReal Second);
-        Parser.EatBigReal(out BigReal OffsetHours);
-        Parser.EatBigReal(out BigReal OffsetMinutes);
-        Parser.EatBigReal(out BigReal OffsetSeconds);
+        Parser.EatInt32(out int Hour, 0);
+        Parser.EatInt32(out int Minute, 0);
+        Parser.EatBigReal(out BigReal Second, 0);
+        Parser.EatBigReal(out BigReal OffsetHours, 0);
+        Parser.EatBigReal(out BigReal OffsetMinutes, 0);
+        Parser.EatBigReal(out BigReal OffsetSeconds, 0);
 
         return new BigDateTimeOffset(Year, Month, Day, Hour, Minute, Second, (OffsetHours * SecondsInHour) + (OffsetMinutes * SecondsInMinute) + OffsetSeconds);
     }
