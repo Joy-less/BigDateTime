@@ -1,6 +1,6 @@
 ﻿namespace ExtendedNumerics.Tests;
 
-public class BigDateTests {
+public class BigDateTimeTests {
     [Fact]
     public void Test1() {
         BigDateTime SciFiDate = new(60_000, 12, 30);
