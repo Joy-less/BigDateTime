@@ -1,4 +1,4 @@
-﻿namespace BigTime;
+﻿namespace ExtendedNumerics;
 
 /// <summary>
 /// Specifies segments of the day.

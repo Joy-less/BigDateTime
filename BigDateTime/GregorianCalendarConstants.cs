@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace BigTime;
+namespace ExtendedNumerics;
 
 /// <summary>
 /// Date and time constants that apply to the Gregorian calendar.

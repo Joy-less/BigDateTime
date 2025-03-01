@@ -1,6 +1,4 @@
-﻿using ExtendedNumerics;
-
-namespace BigTime;
+﻿namespace ExtendedNumerics;
 
 using static GregorianCalendarConstants;
 

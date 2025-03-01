@@ -1,8 +1,7 @@
 ﻿using System.Buffers;
 using System.Numerics;
-using ExtendedNumerics;
 
-namespace BigTime;
+namespace ExtendedNumerics;
 
 internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
     public ReadOnlySpan<char> CharSpan { get; } = CharSpan;

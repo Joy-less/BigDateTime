@@ -1,7 +1,6 @@
-﻿using ExtendedNumerics;
-using System.Numerics;
+﻿using System.Numerics;
 
-namespace BigTime;
+namespace ExtendedNumerics;
 
 using static GregorianCalendarConstants;
 

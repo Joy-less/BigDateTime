@@ -1,4 +1,4 @@
-﻿namespace BigTime.Tests;
+﻿namespace ExtendedNumerics.Tests;
 
 public class BigDateTests {
     [Fact]
