@@ -24,7 +24,7 @@ public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable<BigDateTi
     /// Constructs a <see cref="BigDateTime"/> from a date.
     /// </summary>
     public BigDateTime(BigInteger Year, int Month, int Day)
-        : this(Year, Month, Day, 0, 0, 0) { }
+        : this(Year, Month, Day, 0, 0, BigReal.Zero) { }
     /// <summary>
     /// Constructs a <see cref="BigDateTime"/> from a less-flexible <see cref="DateTime"/>.
     /// </summary>
