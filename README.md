@@ -2,15 +2,15 @@
 
 [![NuGet](https://img.shields.io/nuget/v/BigDateTime.svg)](https://www.nuget.org/packages/BigDateTime)
 
-An arbitrary size and precision date and time stored using a BigReal, that can represent any moment, even `60242/1/5 23:59:22`.
+An arbitrary size and precision date and time stored using a `BigReal`, that can represent any moment, even `60242/1/5 23:59:22`.
 
 The first of its kind to my knowledge.
 
 ## Features
 
-- Supports arbitrary-size dates (DateTime only supports years 1 to 9999)
-- Supports arbitrary-precision times (DateTime is only precise to 100 nanoseconds / 0.0000001 seconds)
-- Highly performant (takes algorithms from DateTime)
+- Supports arbitrary-size dates (`DateTime` only supports years 1 to 9999)
+- Supports arbitrary-precision times (`DateTime` is only precise to 100 nanoseconds / 0.0000001 seconds)
+- Highly performant (uses black magic algorithms from `DateTime`)
 
 ## Examples
 
