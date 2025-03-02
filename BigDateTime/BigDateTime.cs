@@ -177,43 +177,43 @@ public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable<BigDateTi
         return AddSeconds(-Value.TotalSeconds);
     }
     /// <summary>
-    /// Returns the full name of the month according to the given or invariant culture.<br/>
+    /// Returns the full name of the month according to the given or current culture.<br/>
     /// Example: January
     /// </summary>
     public string MonthName(CultureInfo? Culture = null) {
-        Culture ??= CultureInfo.InvariantCulture;
+        Culture ??= CultureInfo.CurrentCulture;
         return Culture.DateTimeFormat.GetMonthName(Month);
     }
     /// <summary>
-    /// Returns the abbreviated name of the month according to the given or invariant culture.<br/>
+    /// Returns the abbreviated name of the month according to the given or current culture.<br/>
     /// Example: Jan
     /// </summary>
     public string AbbreviatedMonthName(CultureInfo? Culture = null) {
-        Culture ??= CultureInfo.InvariantCulture;
+        Culture ??= CultureInfo.CurrentCulture;
         return Culture.DateTimeFormat.GetAbbreviatedMonthName(Month);
     }
     /// <summary>
-    /// Returns the full name of the day of the week according to the given or invariant culture.<br/>
+    /// Returns the full name of the day of the week according to the given or current culture.<br/>
     /// Example: Monday
     /// </summary>
     public string DayOfWeekName(CultureInfo? Culture = null) {
-        Culture ??= CultureInfo.InvariantCulture;
+        Culture ??= CultureInfo.CurrentCulture;
         return Culture.DateTimeFormat.GetDayName(DayOfWeek);
     }
     /// <summary>
-    /// Returns the abbreviated name of the day of the week according to the given or invariant culture.<br/>
+    /// Returns the abbreviated name of the day of the week according to the given or current culture.<br/>
     /// Example: Mon
     /// </summary>
     public string AbbreviatedDayOfWeekName(CultureInfo? Culture = null) {
-        Culture ??= CultureInfo.InvariantCulture;
+        Culture ??= CultureInfo.CurrentCulture;
         return Culture.DateTimeFormat.GetAbbreviatedDayName(DayOfWeek);
     }
     /// <summary>
-    /// Returns the name of the daytime segment according to the given or invariant culture.<br/>
+    /// Returns the name of the daytime segment according to the given or current culture.<br/>
     /// Example: AM
     /// </summary>
     public string DaytimeSegmentName(CultureInfo? Culture = null) {
-        Culture ??= CultureInfo.InvariantCulture;
+        Culture ??= CultureInfo.CurrentCulture;
         return DaytimeSegment switch {
             DaytimeSegment.AM => Culture.DateTimeFormat.AMDesignator,
             DaytimeSegment.PM => Culture.DateTimeFormat.PMDesignator,
