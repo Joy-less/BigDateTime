@@ -174,7 +174,7 @@ public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable<BigDateTi
     /// Returns a date time that subtracts the total seconds of <paramref name="Value"/>.
     /// </summary>
     public BigDateTime Subtract(TimeSpan Value) {
-        return AddSeconds(-Value.Seconds);
+        return AddSeconds(-Value.TotalSeconds);
     }
     /// <summary>
     /// Returns the full name of the month according to the given or invariant culture.<br/>

@@ -137,7 +137,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal? Offse
     }
     /// <inheritdoc cref="BigDateTime.Subtract(TimeSpan)"/>
     public BigDateTimeOffset Subtract(TimeSpan Value) {
-        return AddSeconds(-Value.Seconds);
+        return AddSeconds(-Value.TotalSeconds);
     }
     /// <summary>
     /// Returns a new <see cref="BigDateTimeOffset"/> where the offset is changed to the given number of hours.<br/>
