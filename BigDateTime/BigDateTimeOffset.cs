@@ -8,7 +8,7 @@ using static GregorianCalendarConstants;
 /// <summary>
 /// An arbitrary size and precision DateTimeOffset in the Gregorian calendar.
 /// </summary>
-public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal? Offset = null) : IComparable<BigDateTimeOffset>, IComparable<DateTimeOffset> {
+public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal? Offset = null) : IComparable, IComparable<BigDateTimeOffset>, IComparable<DateTimeOffset> {
     /// <summary>
     /// The <see cref="BigDateTime"/> component before the offset is applied.
     /// </summary>
@@ -189,16 +189,40 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal? Offse
         return ToString("ddd d MMM yyyy HH:mm:ss zzz");
     }
     /// <summary>
-    /// Compares this <see cref="BigDateTime"/> with the <see cref="BigDateTime"/> for sorting.
+    /// Returns:
+    /// <list type="bullet">
+    ///   <item>1 if this value &gt; <paramref name="Other"/></item>
+    ///   <item>0 if this value == <paramref name="Other"/></item>
+    ///   <item>-1 if this value &lt; <paramref name="Other"/></item>
+    /// </list>
     /// </summary>
     public int CompareTo(BigDateTimeOffset Other) {
         return TotalSeconds.CompareTo(Other.TotalSeconds);
     }
-    /// <summary>
-    /// Compares this <see cref="BigDateTime"/> with the <see cref="DateTime"/> for sorting.
-    /// </summary>
+    /// <inheritdoc cref="CompareTo(BigDateTimeOffset)"/>
     public int CompareTo(DateTimeOffset Other) {
         return TotalSeconds.CompareTo(Other.TotalSeconds());
+    }
+    /// <summary>
+    /// Returns:
+    /// <list type="bullet">
+    ///   <item>1 if this value &gt; <paramref name="Other"/></item>
+    ///   <item>0 if this value == <paramref name="Other"/></item>
+    ///   <item>-1 if this value &lt; <paramref name="Other"/></item>
+    ///   <item>1 if <paramref name="Other"/> is <see langword="null"/> (<see langword="null"/> is less than any value)</item>
+    ///   <item>throws an exception if <paramref name="Other"/> is not <see cref="BigDateTimeOffset"/></item>
+    /// </list>
+    /// </summary>
+    public int CompareTo(object? Other) {
+        if (Other is null) {
+            return 1;
+        }
+        else if (Other is BigDateTimeOffset OtherBigDateTimeOffset) {
+            return CompareTo(OtherBigDateTimeOffset);
+        }
+        else {
+            throw new ArgumentException($"{nameof(Other)} is not {nameof(BigDateTimeOffset)}");
+        }
     }
 
     /// <summary>
