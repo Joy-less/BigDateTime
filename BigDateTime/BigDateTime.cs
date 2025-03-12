@@ -9,7 +9,7 @@ using static Extensions;
 /// <summary>
 /// An arbitrary size and precision DateTime in the Gregorian calendar.
 /// </summary>
-public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable<BigDateTime>, IComparable<DateTime> {
+public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable, IComparable<BigDateTime>, IComparable<DateTime> {
     /// <summary>
     /// The total number of seconds since 0000/00/00 00:00:00.
     /// </summary>
@@ -247,16 +247,40 @@ public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable<BigDateTi
     }
 
     /// <summary>
-    /// Compares this <see cref="BigDateTime"/> with the <see cref="BigDateTime"/> for sorting.
+    /// Returns:
+    /// <list type="bullet">
+    ///   <item>1 if this value &gt; <paramref name="Other"/></item>
+    ///   <item>0 if this value == <paramref name="Other"/></item>
+    ///   <item>-1 if this value &lt; <paramref name="Other"/></item>
+    /// </list>
     /// </summary>
     public int CompareTo(BigDateTime Other) {
         return TotalSeconds.CompareTo(Other.TotalSeconds);
     }
-    /// <summary>
-    /// Compares this <see cref="BigDateTime"/> with the <see cref="DateTime"/> for sorting.
-    /// </summary>
+    /// <inheritdoc cref="CompareTo(BigDateTime)"/>
     public int CompareTo(DateTime Other) {
         return TotalSeconds.CompareTo(Other.TotalSeconds());
+    }
+    /// <summary>
+    /// Returns:
+    /// <list type="bullet">
+    ///   <item>1 if this value &gt; <paramref name="Other"/></item>
+    ///   <item>0 if this value == <paramref name="Other"/></item>
+    ///   <item>-1 if this value &lt; <paramref name="Other"/></item>
+    ///   <item>1 if <paramref name="Other"/> is <see langword="null"/> (<see langword="null"/> is less than any value)</item>
+    ///   <item>throws an exception if <paramref name="Other"/> is not <see cref="BigDateTime"/></item>
+    /// </list>
+    /// </summary>
+    public int CompareTo(object? Other) {
+        if (Other is null) {
+            return 1;
+        }
+        else if (Other is BigDateTime OtherBigDateTime) {
+            return CompareTo(OtherBigDateTime);
+        }
+        else {
+            throw new ArgumentException($"{nameof(Other)} is not {nameof(BigDateTime)}");
+        }
     }
 
     /// <summary>
