@@ -45,7 +45,7 @@ internal ref struct Parser(ReadOnlySpan<char> CharSpan) {
     }
     public bool EatBigReal(out BigReal BigReal, BigReal Default) {
         if (EatComponent(out ReadOnlySpan<char> Component)) {
-            BigReal = BigReal.Parse(Component.ToString()); // TODO: Use ReadOnlySpan<char> overload rather than calling ToString() if/when it is added.
+            BigReal = BigReal.Parse(Component);
             return true;
         }
         BigReal = Default;
