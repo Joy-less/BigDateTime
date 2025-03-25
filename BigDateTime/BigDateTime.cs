@@ -153,6 +153,12 @@ public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable, ICompara
         return AddMicroseconds(Value / 1000);
     }
     /// <summary>
+    /// Adds the number of picoseconds.
+    /// </summary>
+    public BigDateTime AddPicoseconds(BigReal Value) {
+        return AddNanoseconds(Value / 1000);
+    }
+    /// <summary>
     /// Adds the total seconds of <paramref name="Value"/>.
     /// </summary>
     public BigDateTime Add(BigDateTime Value) {

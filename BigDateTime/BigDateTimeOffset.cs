@@ -123,6 +123,10 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal? Offse
     public BigDateTimeOffset AddNanoseconds(BigReal Value) {
         return new BigDateTimeOffset(DateTime.AddNanoseconds(Value), Offset);
     }
+    /// <inheritdoc cref="BigDateTime.AddPicoseconds(BigReal)"/>
+    public BigDateTimeOffset AddPicoseconds(BigReal Value) {
+        return new BigDateTimeOffset(DateTime.AddPicoseconds(Value), Offset);
+    }
     /// <inheritdoc cref="BigDateTime.Add(BigDateTime)"/>
     public BigDateTimeOffset Add(BigDateTimeOffset Value) {
         return AddSeconds(Value.TotalSeconds);
