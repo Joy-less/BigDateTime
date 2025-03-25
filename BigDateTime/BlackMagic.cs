@@ -118,7 +118,7 @@ internal static class BlackMagic {
             Month = 12 + (int)((I + 1) % 12);
             Year += (I - 11) / 12;
         }
-        int Days = DaysInMonth(Month, Year);
+        int Days = DaysInMonth(Year, Month);
         if (Day > Days) {
             Day = Days;
         }

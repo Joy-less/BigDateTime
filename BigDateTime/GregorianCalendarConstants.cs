@@ -39,7 +39,7 @@ internal static class GregorianCalendarConstants {
     public static BigInteger CommonYearsBefore(BigInteger Year) {
         return Year - LeapYearsBefore(Year);
     }
-    public static int DaysInMonth(int Month, BigInteger Year) {
+    public static int DaysInMonth(BigInteger Year, int Month) {
         ReadOnlySpan<int> DaysInMonthInYear = IsLeapYear(Year) ? DaysInMonthInLeapYear : DaysInMonthInCommonYear;
         return DaysInMonthInYear[Month - 1];
     }
