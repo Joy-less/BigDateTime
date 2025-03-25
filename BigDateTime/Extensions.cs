@@ -31,7 +31,7 @@ internal static class Extensions {
     /// <summary>
     /// Throws an exception if any component is outside the valid range.
     /// </summary>
-    public static void AssertInRange(int? Month, int? Day, int? Hour, int? Minute, BigReal? Second) {
+    public static void AssertInRange(int? Month = null, int? Day = null, int? Hour = null, int? Minute = null, BigReal? Second = null) {
         if (Month is not null && (Month is < 1 or > 12)) {
             throw new ArgumentOutOfRangeException(nameof(Month), "Month must be 1 to 12");
         }
