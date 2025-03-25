@@ -5,11 +5,16 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
     <!-- IDE0130: Namespace does not match folder structure -->
     <NoWarn>IDE0130</NoWarn>
-    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
-  
+
+  <PropertyGroup>
+    <IsAotCompatible>true</IsAotCompatible>
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
   <PropertyGroup>
     <PackageId>BigDateTime</PackageId>
     <Description>An arbitrary size and precision date and time stored using a BigReal.</Description>
@@ -24,14 +29,14 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Include="../README.md">
       <Pack>True</Pack>
       <PackagePath>/</PackagePath>
     </None>
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="BigReal" Version="4.1.0" />
   </ItemGroup>
