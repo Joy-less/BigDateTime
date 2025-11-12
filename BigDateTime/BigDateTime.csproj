@@ -38,6 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BigReal" Version="5.2.0" />
+    <PackageReference Include="BigReal" Version="5.5.0" />
   </ItemGroup>
 </Project>
