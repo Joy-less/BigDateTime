@@ -135,25 +135,25 @@ public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable, ICompara
         return new BigDateTime(TotalSeconds + Value);
     }
     /// <summary>
-    /// Adds the number of milliseconds.
+    /// Adds the number of milliseconds (1 second = 1,000 milliseconds).
     /// </summary>
     public BigDateTime AddMilliseconds(BigReal Value) {
         return AddSeconds(Value / 1000);
     }
     /// <summary>
-    /// Adds the number of microseconds.
+    /// Adds the number of microseconds (1 second = 1,000,000 microseconds).
     /// </summary>
     public BigDateTime AddMicroseconds(BigReal Value) {
         return AddMilliseconds(Value / 1000);
     }
     /// <summary>
-    /// Adds the number of nanoseconds.
+    /// Adds the number of nanoseconds (1 second = 1,000,000,000 nanoseconds).
     /// </summary>
     public BigDateTime AddNanoseconds(BigReal Value) {
         return AddMicroseconds(Value / 1000);
     }
     /// <summary>
-    /// Adds the number of picoseconds.
+    /// Adds the number of picoseconds (1 second = 1,000,000,000,000 picoseconds).
     /// </summary>
     public BigDateTime AddPicoseconds(BigReal Value) {
         return AddNanoseconds(Value / 1000);
