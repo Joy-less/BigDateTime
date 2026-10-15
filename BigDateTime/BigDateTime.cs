@@ -322,12 +322,18 @@ public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable, ICompara
     /// <summary>
     /// Returns a <see cref="BigDateTime"/> representing the current time at the given UTC offset.
     /// </summary>
+    /// <remarks>
+    /// To get the current time in UTC, call <c>Now(0)</c>.
+    /// </remarks>
     public static BigDateTime Now(BigReal Offset) {
         return new BigDateTime(DateTime.UtcNow).AddHours(Offset);
     }
     /// <summary>
     /// Returns a <see cref="BigDateTime"/> representing the current time at the local UTC offset.
     /// </summary>
+    /// <remarks>
+    /// To get the current time in UTC, call <c>Now(0)</c>.
+    /// </remarks>
     public static BigDateTime Now() {
         return Now(DateTimeOffset.Now.Offset.TotalHours);
     }
