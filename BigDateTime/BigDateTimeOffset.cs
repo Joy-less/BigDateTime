@@ -266,12 +266,18 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal? Offse
     /// <summary>
     /// Returns a <see cref="BigDateTimeOffset"/> representing the current time at the given UTC offset.
     /// </summary>
+    /// <remarks>
+    /// To get the current time in UTC, call <c>Now(0)</c>.
+    /// </remarks>
     public static BigDateTimeOffset Now(BigReal Offset) {
         return new BigDateTimeOffset(System.DateTime.UtcNow, Offset);
     }
     /// <summary>
     /// Returns a <see cref="BigDateTimeOffset"/> representing the current time at the local UTC offset.
     /// </summary>
+    /// <remarks>
+    /// To get the current time in UTC, call <c>Now(0)</c>.
+    /// </remarks>
     public static BigDateTimeOffset Now() {
         return Now(DateTimeOffset.Now.Offset.TotalHours);
     }
