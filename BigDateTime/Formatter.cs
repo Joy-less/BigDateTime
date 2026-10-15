@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace ExtendedNumerics;
@@ -50,7 +51,7 @@ internal static class Formatter {
         ("z", BDTO => (BigReal.IsNegative(BDTO.Offset) ? "-" : "+") + BigReal.GetWholePart(BigReal.Abs(BDTO.Offset))),
     ];
 
-    public static string Format(string Format, BigDateTimeOffset BigDateTimeOffset) {
+    public static string Format([StringSyntax(StringSyntaxAttribute.DateTimeFormat)] string Format, BigDateTimeOffset BigDateTimeOffset) {
         for (int Index = 0; Index < Format.Length; Index++) {
             foreach ((string Find, Func<BigDateTimeOffset, string> Replace) in FormatTable) {
                 // Ensure find sequence would fit inside rest of string

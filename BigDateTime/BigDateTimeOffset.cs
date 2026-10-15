@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Numerics;
 
 namespace ExtendedNumerics;
@@ -171,7 +172,7 @@ public readonly struct BigDateTimeOffset(BigDateTime BigDateTime, BigReal? Offse
         return Applied.DaytimeSegmentName(Culture);
     }
     /// <inheritdoc cref="BigDateTime.ToString(string)"/>
-    public string ToString(string Format) {
+    public string ToString([StringSyntax(StringSyntaxAttribute.DateTimeFormat)] string Format) {
         return Formatter.Format(Format, this);
     }
     /// <summary>

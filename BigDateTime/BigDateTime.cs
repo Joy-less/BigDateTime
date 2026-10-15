@@ -1,10 +1,11 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Numerics;
 
 namespace ExtendedNumerics;
 
-using static GregorianCalendarConstants;
 using static Extensions;
+using static GregorianCalendarConstants;
 
 /// <summary>
 /// An arbitrary size and precision DateTime in the Gregorian calendar.
@@ -230,7 +231,7 @@ public readonly struct BigDateTime(BigReal TotalSeconds) : IComparable, ICompara
     /// Stringifies the date and time using a format string
     /// (see <see href="https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings">Format Strings</see>).
     /// </summary>
-    public string ToString(string Format) {
+    public string ToString([StringSyntax(StringSyntaxAttribute.DateTimeFormat)] string Format) {
         return new BigDateTimeOffset(this).ToString(Format);
     }
     /// <summary>
